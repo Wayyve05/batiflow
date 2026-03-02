@@ -297,7 +297,7 @@ function DForm({art,clis,addC,mob,onDone}){
   const[loading,setLoading]=useState(false);const[err,setErr]=useState(null);const[showC,setShowC]=useState(false);
   const u=(k,v)=>sF(p=>({...p,[k]:v}));
   const gen=async()=>{setLoading(true);setErr(null);try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:`Artisan ${art.metier} français. Devis JSON: "${f.description}" Client: ${f.clientNom}. UNIQUEMENT JSON: {"lignes":[{"poste":"X","unite":"m²/u/forfait/h","quantite":1,"prixUnitaireHT":100}],"conditions":"..."} 4-10 lignes, prix France 2025.`}]})});
+    const r=await fetch("/api/generate-devis",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({description:f.description,clientNom:f.clientNom,metier:art.metier,urgence:f.urgence})}çais. Devis JSON: "${f.description}" Client: ${f.clientNom}. UNIQUEMENT JSON: {"lignes":[{"poste":"X","unite":"m²/u/forfait/h","quantite":1,"prixUnitaireHT":100}],"conditions":"..."} 4-10 lignes, prix France 2025.`}]})});
     const data=await r.json();const txt=data.content?.map(c=>c.text||"").join("")||"";
     const p=JSON.parse(txt.replace(/```json|```/g,"").trim());const tv=parseFloat(art.tvaRate||"10")/100;
     const lignes=p.lignes.map(l=>({...l,totalHT:(l.quantite*l.prixUnitaireHT).toFixed(2)}));
