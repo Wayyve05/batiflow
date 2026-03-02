@@ -33,7 +33,7 @@ const SearchBar=({value,onChange,placeholder})=><input style={{...inp,maxWidth:3
 // ===================== LANDING =====================
 function Landing({onStart,onLogin,onLegal}){
   const mob=useMobile();const[faq,setFaq]=useState(null);const[menu,setMenu]=useState(false);
-  const features=[{i:"📝",t:"Devis automatique",d:"L'IA génère un devis pro en 10 secondes."},{i:"🧾",t:"Factures en 1 clic",d:"Devis → facture conforme automatiquement."},{i:"🔔",t:"Relance intelligente",d:"Relance auto des devis non signés."},{i:"📊",t:"Calcul de marges",d:"Rentabilité en temps réel."},{i:"🏗️",t:"Suivi de chantier",d:"Suivez l'avancement.",soon:true},{i:"📑",t:"Contrats PDF",d:"Contrats pré-remplis.",soon:true}];
+  const features=[{i:"📝",t:"Devis IA en 10 secondes",d:"Decrivez le chantier en 2 lignes. L'IA genere un devis complet avec fournitures, main d'oeuvre et prix du marche."},{i:"🧾",t:"Factures conformes en 1 clic",d:"Devis accepte ? Un clic et la facture est prete avec toutes les mentions legales obligatoires."},{i:"🔔",t:"Relances automatiques",d:"Plus de devis oublies. Batiflow relance vos clients au bon moment par email."},{i:"📊",t:"Marges en temps reel",d:"Sachez exactement combien vous gagnez sur chaque chantier. Fini les mauvaises surprises."},{i:"👥",t:"Fichier clients organise",d:"Tous vos clients, historique des devis et factures. Retrouvez tout en 2 secondes."},{i:"📱",t:"Fonctionne sur telephone",d:"Sur le chantier ? Creez un devis depuis votre telephone et envoyez-le sur place."}];
   const plans=[{n:"Starter",p:"14,99",f:["Devis illimités","PDF personnalisés","Envoi email","Support"]},{n:"Pro",p:"34,99",pop:true,f:["Tout Starter","Factures","Relances auto","Marges","Dashboard","Support prio"]},{n:"Entreprise",p:"49,99",f:["Tout Pro","Suivi chantier","Contrats","5 utilisateurs","Accompagnement"]}];
   const faqs=[{q:"Adapté à mon métier ?",a:"Oui ! Plombiers, électriciens, peintres, carreleurs…"},{q:"Pas doué en informatique ?",a:"Si vous savez envoyer un SMS, c'est bon. Support en 24h."},{q:"Devis conformes ?",a:"Mentions légales incluses : SIRET, assurance, TVA."},{q:"Annulation ?",a:"Sans engagement. Résiliation en un clic."},{q:"Comment ça marche ?",a:"Décrivez le chantier, l'IA génère les lignes + prix. Vous ajustez."},{q:"Données sécurisées ?",a:"Hébergées en France, chiffrées, RGPD."}];
   const scr=id=>{const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth"})};
@@ -57,14 +57,19 @@ function Landing({onStart,onLogin,onLegal}){
     </div>}
 
     {/* HERO */}
-    <section style={{maxWidth:1200,margin:"0 auto",padding:mob?"40px 20px":"80px 32px",display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:mob?32:60,alignItems:"center"}}>
+    <section style={{maxWidth:1200,margin:"0 auto",padding:mob?"40px 20px":"0 32px",display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:mob?32:60,alignItems:"center",minHeight:mob?"auto":"100vh"}}>
       <div>
-        <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"6px 16px",background:C.g100,borderRadius:50,fontSize:"0.82rem",fontWeight:500,color:C.g800,marginBottom:20}}><span style={{width:8,height:8,borderRadius:"50%",background:C.g500,display:"inline-block"}}/>L'IA pour les artisans</div>
-        <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:mob?"2.2rem":"3.2rem",lineHeight:1.1,color:C.g900,marginBottom:20}}>Fini la paperasse,<br/>place au <em style={{color:C.g600,fontStyle:"normal"}}>chantier</em></h1>
-        <p style={{fontSize:"1.05rem",lineHeight:1.65,color:C.x700,marginBottom:28,maxWidth:480}}>Devis, factures, relances… Batiflow automatise votre admin en quelques clics.</p>
+        <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"6px 16px",background:C.g100,borderRadius:50,fontSize:"0.82rem",fontWeight:500,color:C.g800,marginBottom:20}}><span style={{width:8,height:8,borderRadius:"50%",background:C.g500,display:"inline-block"}}/>N°1 de la gestion artisan par IA</div>
+        <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:mob?"2.2rem":"3.2rem",lineHeight:1.1,color:C.g900,marginBottom:20}}>Vos devis en <em style={{color:C.g600,fontStyle:"normal"}}>10 secondes</em>,<br/>vos factures en 1 clic</h1>
+        <p style={{fontSize:"1.05rem",lineHeight:1.65,color:C.x700,marginBottom:12,maxWidth:480}}>Vous perdez 5h par semaine sur la paperasse ? Batiflow utilise l'IA pour automatiser vos devis, factures et relances.</p>
+        <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
+          {["Decrivez votre chantier, l'IA genere un devis detaille avec les bons prix","Transformez un devis accepte en facture conforme en 1 clic","Relance automatique des devis non signes"].map((t,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8,fontSize:"0.9rem",color:C.x700}}><Chk/>{t}</div>)}
+        </div>
         <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
-          <button style={bp} onClick={onStart}>Essayer 14 jours gratuit →</button>
-          <button style={bs} onClick={()=>scr("outils")}>Découvrir</button>
+          <button style={bp} onClick={onStart}>Essayer gratuitement 14 jours →</button>
+          <button style={bs} onClick={()=>scr("demo")}>Voir la demo</button>
+        </div>
+        <p style={{fontSize:"0.78rem",color:C.x500,marginTop:10}}>Sans carte bancaire · Sans engagement · 2 min pour demarrer</p>
         </div>
       </div>
       {!mob&&<div style={{background:C.wh,borderRadius:20,boxShadow:"0 24px 60px rgba(11,61,46,0.12)",padding:24,border:`1px solid ${C.g100}`,position:"relative"}}>
@@ -75,9 +80,23 @@ function Landing({onStart,onLogin,onLegal}){
       </div>}
     </section>
 
+    {/* HOW IT WORKS */}
+    <section id="demo" style={{background:C.g50,padding:mob?"48px 16px":"80px 32px",textAlign:"center"}}><div style={{maxWidth:1200,margin:"0 auto"}}>
+      <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:mob?"1.8rem":"2.4rem",color:C.g900,marginBottom:12}}>Comment ca marche ?</h2>
+      <p style={{color:C.x500,marginBottom:32,maxWidth:500,margin:"0 auto 32px"}}>3 etapes pour ne plus jamais perdre de temps sur vos devis</p>
+      <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"repeat(3,1fr)",gap:24}}>
+        {[{n:"1",t:"Decrivez le chantier",d:"Tapez en quelques mots : 'renovation SDB, douche italienne, carrelage 15m2'. C'est tout.",i:"🎤"},{n:"2",t:"L'IA genere le devis",d:"En 10 secondes : lignes detaillees, prix du marche, fournitures + main d'oeuvre. Pret a envoyer.",i:"🤖"},{n:"3",t:"Envoyez et suivez",d:"PDF pro, envoi par email, relance auto si pas de reponse. Transformez en facture en 1 clic.",i:"📤"}].map((s,i)=><div key={i} style={{background:C.wh,borderRadius:16,padding:28,border:`1px solid ${C.g100}`}}>
+          <div style={{width:56,height:56,borderRadius:"50%",background:C.g700,color:C.wh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.4rem",margin:"0 auto 14px"}}>{s.i}</div>
+          <div style={{fontWeight:700,color:C.g900,marginBottom:6,fontSize:"1.05rem"}}>Etape {s.n} : {s.t}</div>
+          <div style={{fontSize:"0.88rem",lineHeight:1.6,color:C.x500}}>{s.d}</div>
+        </div>)}
+      </div>
+    </div></section>
+
     {/* PAIN */}
     <section style={{background:C.g900,padding:mob?"48px 16px":"80px 32px"}}><div style={{maxWidth:1200,margin:"0 auto"}}>
-      <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:mob?"1.8rem":"2.4rem",color:C.wh,marginBottom:32}}>Vous êtes artisan, pas comptable</h2>
+      <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:mob?"1.8rem":"2.4rem",color:C.wh,marginBottom:12}}>Vous perdez du temps et de l'argent</h2>
+      <p style={{color:"rgba(255,255,255,0.5)",marginBottom:32,maxWidth:500}}>Sans Batiflow, voici ce que ca vous coute chaque semaine :</p>
       <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"repeat(3,1fr)",gap:16}}>
         {[["5h","Perdues/semaine"],["40%","Devis jamais relancés"],["0","Vision sur vos marges"]].map(([s,t],i)=><div key={i} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:16,padding:24}}>
           <div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"2rem",fontWeight:700,color:C.g400}}>{s}</div>
@@ -297,9 +316,9 @@ function DForm({art,clis,addC,mob,onDone}){
   const[loading,setLoading]=useState(false);const[err,setErr]=useState(null);const[showC,setShowC]=useState(false);
   const u=(k,v)=>sF(p=>({...p,[k]:v}));
   const gen=async()=>{setLoading(true);setErr(null);try{
-    const r=await fetch("/api/generate-devis",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({description:f.description,clientNom:f.clientNom,metier:art.metier,urgence:f.urgence})}çais. Devis JSON: "${f.description}" Client: ${f.clientNom}. UNIQUEMENT JSON: {"lignes":[{"poste":"X","unite":"m²/u/forfait/h","quantite":1,"prixUnitaireHT":100}],"conditions":"..."} 4-10 lignes, prix France 2025.`}]})});
-    const data=await r.json();const txt=data.content?.map(c=>c.text||"").join("")||"";
-    const p=JSON.parse(txt.replace(/```json|```/g,"").trim());const tv=parseFloat(art.tvaRate||"10")/100;
+    const r=await fetch("/api/generate-devis",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({description:f.description,clientNom:f.clientNom,metier:art.metier,urgence:f.urgence})});
+    const data=await r.json();if(data.error)throw new Error(data.error);const txt=JSON.stringify(data);
+    const p=data;const tv=parseFloat(art.tvaRate||"10")/100;
     const lignes=p.lignes.map(l=>({...l,totalHT:(l.quantite*l.prixUnitaireHT).toFixed(2)}));
     const ht=lignes.reduce((s,l)=>s+parseFloat(l.totalHT),0);
     addC({nom:f.clientNom,adresse:f.clientAdresse,email:f.clientEmail,telephone:f.clientTel});
