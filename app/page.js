@@ -1,5 +1,11 @@
 'use client'
 import { useState, useRef, createContext, useContext, useEffect } from "react";
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+);
 
 const C={g900:"#0B3D2E",g800:"#145A3E",g700:"#1A7A52",g600:"#22995E",g500:"#2DB872",g400:"#4FD68B",g300:"#7FE6AA",g200:"#B4F0CD",g100:"#E0F9EC",g50:"#F2FDF7",o500:"#E8873A",o100:"#FFF3E6",w50:"#FFFCF8",r500:"#E53E3E",r100:"#FEE2E2",b500:"#3B82F6",b100:"#DBEAFE",x900:"#1A1A1A",x700:"#404040",x500:"#737373",x300:"#C4C4C4",x100:"#F5F5F5",wh:"#FFFFFF"};
 
@@ -178,10 +184,24 @@ function Legal({title,onBack}){
 
 // ===================== AUTH =====================
 function Auth({onAuth,onBack,mode:initMode="signup"}){
-  const mob=useMobile();const[mode,setMode]=useState(initMode);
+  const mob=useMobile();const[mode,setMode]=useState(initMode);const[loading,setLoading]=useState(false);
   const[f,sF]=useState({email:"",password:"",confirm:""});const[err,setErr]=useState("");
   const u=(k,v)=>sF(p=>({...p,[k]:v}));
-  const go=()=>{setErr("");if(!f.email||!f.password)return setErr("Remplissez tous les champs");if(mode==="signup"&&f.password!==f.confirm)return setErr("Mots de passe différents");if(f.password.length<6)return setErr("6 caractères minimum");onAuth({email:f.email})};
+  const go=async()=>{setErr("");setLoading(true);
+    if(!f.email||!f.password){setLoading(false);return setErr("Remplissez tous les champs")}
+    if(mode==="signup"&&f.password!==f.confirm){setLoading(false);return setErr("Mots de passe differents")}
+    if(f.password.length<6){setLoading(false);return setErr("6 caracteres minimum")}
+    try{
+      if(mode==="signup"){
+        const{data,error}=await supabase.auth.signUp({email:f.email,password:f.password});
+        if(error)throw error;onAuth({email:f.email,userId:data.user?.id})
+      }else{
+        const{data,error}=await supabase.auth.signInWithPassword({email:f.email,password:f.password});
+        if(error)throw error;onAuth({email:f.email,userId:data.user?.id})
+      }
+    }catch(e){setErr(e.message==="Invalid login credentials"?"Email ou mot de passe incorrect":e.message||"Erreur")}
+    setLoading(false)
+  };
   return <div style={{minHeight:"100vh",display:"flex",flexDirection:mob?"column":"row",background:`linear-gradient(135deg,${C.g900},${C.g800})`}}>
     {!mob&&<div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"48px 52px",color:C.wh,maxWidth:460}}>
       <button onClick={onBack} style={{color:"rgba(255,255,255,0.5)",border:"none",background:"none",cursor:"pointer",fontFamily:"inherit",fontSize:"0.82rem",marginBottom:28,padding:0,textAlign:"left"}}>← Retour</button>
@@ -198,7 +218,7 @@ function Auth({onAuth,onBack,mode:initMode="signup"}){
           <div><span style={lbl}>Mot de passe</span><input style={inp} type="password" placeholder="••••••••" value={f.password} onChange={e=>u("password",e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()}/></div>
           {mode==="signup"&&<div><span style={lbl}>Confirmer</span><input style={inp} type="password" placeholder="••••••••" value={f.confirm} onChange={e=>u("confirm",e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()}/></div>}
           {err&&<div style={{fontSize:"0.82rem",color:C.r500,background:C.r100,padding:"8px 12px",borderRadius:8}}>{err}</div>}
-          <button style={{...bp,width:"100%",justifyContent:"center"}} onClick={go}>{mode==="login"?"Se connecter →":"Créer mon compte →"}</button>
+          <button style={{...bp,width:"100%",justifyContent:"center",opacity:loading?0.6:1}} onClick={go} disabled={loading}>{loading?"Chargement...":mode==="login"?"Se connecter →":"Créer mon compte →"}</button>
           <div style={{textAlign:"center",fontSize:"0.82rem",color:C.x500}}>{mode==="login"?"Pas de compte ? ":"Déjà inscrit ? "}<button onClick={()=>{setMode(mode==="login"?"signup":"login");setErr("")}} style={{color:C.g700,fontWeight:600,border:"none",background:"none",cursor:"pointer",fontFamily:"inherit",fontSize:"0.82rem"}}>{mode==="login"?"S'inscrire":"Se connecter"}</button></div>
         </div>
       </div>
@@ -241,17 +261,39 @@ function Onboard({onDone}){
         </div>
         <div><span style={lbl}>Assurance décennale</span><input style={inp} placeholder="N° de police" value={f.assurance} onChange={e=>u("assurance",e.target.value)}/></div>
         <div><span style={lbl}>TVA</span><select style={{...inp,cursor:"pointer"}} value={f.tvaRate} onChange={e=>u("tvaRate",e.target.value)}><option value="10">10%</option><option value="20">20%</option><option value="5.5">5.5%</option><option value="0">0%</option></select></div>
-        <div style={{display:"flex",gap:8}}><button style={{...bs,flex:1,justifyContent:"center"}} onClick={()=>setStep(1)}>← Retour</button><button style={{...bp,flex:2,justifyContent:"center"}} onClick={()=>{toast("Bienvenue sur Batiflow ! 🎉");onDone({...f,logo})}}>C'est parti →</button></div>
+        <div style={{display:"flex",gap:8}}><button style={{...bs,flex:1,justifyContent:"center"}} onClick={()=>setStep(1)}>← Retour</button><button style={{...bp,flex:2,justifyContent:"center"}} onClick={async()=>{
+          const{data:{user}}=await supabase.auth.getUser();
+          if(user){await supabase.from("profiles").upsert({id:user.id,email:user.email,entreprise:f.entreprise,siret:f.siret,adresse:f.adresse,code_postal:f.cp,ville:f.ville,telephone:f.telephone,metier:f.metier,assurance:f.assurance,tva_rate:parseFloat(f.tvaRate||"10")})}
+          toast("Bienvenue sur Batiflow !");onDone({...f,logo})}}>C'est parti →</button></div>
       </div>}
     </div>
   </div>;
 }
 
 // ===================== DASHBOARD =====================
-function Dash({art,setArt,onOut,email}){
+function Dash({art,setArt,onOut,email,uid}){
   const toast=useT();const mob=useMobile();
-  const[v,setV]=useState("home");const[devis,setDevis]=useState([]);const[facs,setFacs]=useState([]);const[clis,setClis]=useState([]);const[cur,setCur]=useState(null);const[nav,setNav]=useState(false);
-  const addC=c=>{if(c.nom&&!clis.find(x=>x.nom===c.nom))setClis(p=>[...p,{...c,id:Date.now()}])};
+  const[v,setV]=useState("home");const[devis,setDevis]=useState([]);const[facs,setFacs]=useState([]);const[clis,setClis]=useState([]);const[cur,setCur]=useState(null);const[nav,setNav]=useState(false);const[loaded,setLoaded]=useState(false);
+
+  useEffect(()=>{if(!uid)return;
+    Promise.all([
+      supabase.from("devis").select("*").eq("user_id",uid).order("created_at",{ascending:false}),
+      supabase.from("factures").select("*").eq("user_id",uid).order("created_at",{ascending:false}),
+      supabase.from("clients").select("*").eq("user_id",uid).order("created_at",{ascending:false})
+    ]).then(([dRes,fRes,cRes])=>{
+      if(dRes.data)setDevis(dRes.data.map(d=>({...d,num:d.numero,clientNom:d.client_nom,clientAdresse:d.client_adresse,clientEmail:d.client_email,clientTel:d.client_tel,totalHT:d.total_ht+" EUR",tva:d.tva+" EUR",totalTTC:d.total_ttc+" EUR",tvaRate:String(d.tva_rate||"10"),date:new Date(d.created_at).toLocaleDateString("fr-FR")})));
+      if(fRes.data)setFacs(fRes.data.map(f=>({...f,num:f.numero,clientNom:f.client_nom,clientAdresse:f.client_adresse,totalHT:f.total_ht+" EUR",tva:f.tva+" EUR",totalTTC:f.total_ttc+" EUR",tvaRate:String(f.tva_rate||"10"),date:new Date(f.created_at).toLocaleDateString("fr-FR")})));
+      if(cRes.data)setClis(cRes.data.map(c=>({...c,nom:c.nom,telephone:c.telephone})));
+      setLoaded(true)
+    })
+  },[uid]);
+
+  const addC=async(c)=>{if(c.nom&&!clis.find(x=>x.nom===c.nom)){const newC={...c,id:Date.now()};setClis(p=>[...p,newC]);if(uid){await supabase.from("clients").insert({user_id:uid,nom:c.nom,adresse:c.adresse||null,email:c.email||null,telephone:c.telephone||null})}}};
+
+  const saveDevis=async(d)=>{if(!uid)return;await supabase.from("devis").insert({user_id:uid,numero:d.num,client_nom:d.clientNom,client_adresse:d.clientAdresse||null,client_email:d.clientEmail||null,client_tel:d.clientTel||null,description:d.description,lignes:d.lignes,total_ht:parseFloat(d.totalHT),tva:parseFloat(d.tva),total_ttc:parseFloat(d.totalTTC),tva_rate:parseFloat(d.tvaRate||"10"),conditions:d.conditions,status:d.status,urgence:d.urgence||"normal"})};
+
+  const saveFac=async(f)=>{if(!uid)return;await supabase.from("factures").insert({user_id:uid,numero:f.num,client_nom:f.clientNom,client_adresse:f.clientAdresse||null,client_email:f.clientEmail||null,description:f.description,lignes:f.lignes,total_ht:parseFloat(f.totalHT),tva:parseFloat(f.tva),total_ttc:parseFloat(f.totalTTC),tva_rate:parseFloat(f.tvaRate||"10"),conditions:f.conditions,status:f.status})};
+
   const go=id=>{setV(id);setCur(null);setNav(false)};
   const items=[{id:"home",i:"🏠",l:"Dashboard"},{id:"new-devis",i:"📝",l:"Nouveau devis"},{id:"devis-list",i:"📋",l:"Devis"},{id:"factures",i:"🧾",l:"Factures"},{id:"clients",i:"👥",l:"Clients"},{id:"chantiers",i:"📸",l:"Chantiers"},{id:"stats",i:"📊",l:"Rentabilite"},{id:"settings",i:"⚙️",l:"Entreprise"},{id:"subscription",i:"💳",l:"Abonnement"}];
 
@@ -265,9 +307,9 @@ function Dash({art,setArt,onOut,email}){
 
   const main=<main style={{padding:mob?16:24,background:C.x100,overflowY:"auto",paddingTop:mob?60:24,minHeight:"100vh"}}>
     {v==="home"&&<HView d={devis} f={facs} a={art} go={go} onNew={()=>go("new-devis")} onVD={d=>{setCur(d);setV("view-d")}} mob={mob}/>}
-    {v==="new-devis"&&<DForm art={art} clis={clis} addC={addC} mob={mob} onDone={d=>{const nd={...d,id:Date.now(),date:new Date().toLocaleDateString("fr-FR"),status:"Brouillon",num:`DEV-${new Date().getFullYear()}-${String(devis.length+1).padStart(4,"0")}`};setDevis(p=>[nd,...p]);setCur(nd);setV("view-d");toast("Devis généré ! 📝")}}/>}
+    {v==="new-devis"&&<DForm art={art} clis={clis} addC={addC} mob={mob} onDone={d=>{const nd={...d,id:Date.now(),date:new Date().toLocaleDateString("fr-FR"),status:"Brouillon",num:`DEV-${new Date().getFullYear()}-${String(devis.length+1).padStart(4,"0")}`};setDevis(p=>[nd,...p]);saveDevis(nd);setCur(nd);setV("view-d");toast("Devis sauvegarde !")}}/>}
     {v==="devis-list"&&<DList devis={devis} onV={d=>{setCur(d);setV("view-d")}} onNew={()=>go("new-devis")}/>}
-    {v==="view-d"&&cur&&<DocV doc={cur} a={art} type="devis" mob={mob} onBack={()=>go("devis-list")} onEdit={()=>setV("edit-d")} onFac={()=>{const f2={...cur,id:Date.now(),date:new Date().toLocaleDateString("fr-FR"),status:"Émise",num:`FAC-${new Date().getFullYear()}-${String(facs.length+1).padStart(4,"0")}`};setFacs(p=>[f2,...p]);setDevis(p=>p.map(d=>d.id===cur.id?{...d,status:"Accepté"}:d));setCur(f2);setV("view-f");toast("Facture créée ! 🧾")}}/>}
+    {v==="view-d"&&cur&&<DocV doc={cur} a={art} type="devis" mob={mob} onBack={()=>go("devis-list")} onEdit={()=>setV("edit-d")} onFac={()=>{const f2={...cur,id:Date.now(),date:new Date().toLocaleDateString("fr-FR"),status:"Emise",num:`FAC-${new Date().getFullYear()}-${String(facs.length+1).padStart(4,"0")}`};setFacs(p=>[f2,...p]);saveFac(f2);setDevis(p=>p.map(d=>d.id===cur.id?{...d,status:"Accepte"}:d));setCur(f2);setV("view-f");toast("Facture creee !")}}/>}
     {v==="edit-d"&&cur&&<EditD doc={cur} mob={mob} onSave={up=>{setDevis(p=>p.map(d=>d.id===up.id?up:d));setCur(up);setV("view-d");toast("Devis modifié ✓")}} onX={()=>setV("view-d")}/>}
     {v==="factures"&&<FList facs={facs} onV={f=>{setCur(f);setV("view-f")}}/>}
     {v==="view-f"&&cur&&<DocV doc={cur} a={art} type="facture" mob={mob} onBack={()=>go("factures")}/>}
@@ -601,16 +643,38 @@ function SubV({mob}){const toast=useT();const[sel,setSel]=useState("pro");const[
 
 // ===================== MAIN =====================
 export default function App(){
-  const[p,setP]=useState("landing");const[art,setArt]=useState(null);const[em,setEm]=useState("");const[leg,setLeg]=useState(null);
+  const[p,setP]=useState("loading");const[art,setArt]=useState(null);const[em,setEm]=useState("");const[leg,setLeg]=useState(null);const[uid,setUid]=useState(null);
+
+  useEffect(()=>{
+    supabase.auth.getSession().then(({data:{session}})=>{
+      if(session?.user){
+        setEm(session.user.email);setUid(session.user.id);
+        supabase.from("profiles").select("*").eq("id",session.user.id).single().then(({data})=>{
+          if(data&&data.entreprise){setArt({entreprise:data.entreprise,siret:data.siret||"",adresse:data.adresse||"",cp:data.code_postal||"",ville:data.ville||"",telephone:data.telephone||"",email:data.email||"",metier:data.metier||"plombier",assurance:data.assurance||"",tvaRate:String(data.tva_rate||"10"),logo:data.logo_url||null});setP("dash")}
+          else setP("onboard")
+        })
+      }else setP("landing")
+    })
+  },[]);
+
+  const handleLogout=async()=>{await supabase.auth.signOut();setP("landing");setArt(null);setUid(null)};
+
+  if(p==="loading")return <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'DM Sans',sans-serif"}}><div style={{textAlign:"center"}}><Logo s={48}/><p style={{marginTop:12,color:C.x500}}>Chargement...</p></div></div>;
+
   return <TP>
     <div style={{fontFamily:"'DM Sans',-apple-system,sans-serif",color:C.x900,minHeight:"100vh",background:C.w50}}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet"/>
       {leg?<Legal title={leg} onBack={()=>setLeg(null)}/>:
        p==="landing"?<Landing onStart={()=>setP("auth-s")} onLogin={()=>setP("auth-l")} onLegal={setLeg}/>:
-       p==="auth-s"?<Auth mode="signup" onAuth={({email})=>{setEm(email);setP("onboard")}} onBack={()=>setP("landing")}/>:
-       p==="auth-l"?<Auth mode="login" onAuth={({email})=>{setEm(email);setP("onboard")}} onBack={()=>setP("landing")}/>:
+       p==="auth-s"?<Auth mode="signup" onAuth={({email,userId})=>{setEm(email);setUid(userId);setP("onboard")}} onBack={()=>setP("landing")}/>:
+       p==="auth-l"?<Auth mode="login" onAuth={({email,userId})=>{setEm(email);setUid(userId);
+         supabase.from("profiles").select("*").eq("id",userId).single().then(({data})=>{
+           if(data&&data.entreprise){setArt({entreprise:data.entreprise,siret:data.siret||"",adresse:data.adresse||"",cp:data.code_postal||"",ville:data.ville||"",telephone:data.telephone||"",email:data.email||"",metier:data.metier||"plombier",assurance:data.assurance||"",tvaRate:String(data.tva_rate||"10"),logo:data.logo_url||null});setP("dash")}
+           else setP("onboard")
+         })
+       }} onBack={()=>setP("landing")}/>:
        p==="onboard"?<Onboard onDone={d=>{setArt(d);setP("dash")}}/>:
-       p==="dash"&&art?<Dash art={art} setArt={setArt} onOut={()=>{setP("landing");setArt(null)}} email={em}/>:null}
+       p==="dash"&&art?<Dash art={art} setArt={setArt} onOut={handleLogout} email={em} uid={uid}/>:null}
     </div>
   </TP>;
 }
