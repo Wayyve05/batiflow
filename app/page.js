@@ -69,8 +69,7 @@ function Landing({onStart,onLogin,onLegal}){
           <button style={bp} onClick={onStart}>Essayer gratuitement 14 jours →</button>
           <button style={bs} onClick={()=>scr("demo")}>Voir la demo</button>
         </div>
-        <p style={{fontSize:"0.78rem",color:C.x500,marginTop:10}}>Sans carte bancaire · Sans engagement · 2 min pour demarrer</p>
-        </div>
+        <p style={{fontSize:"0.78rem",color:C.x500,marginTop:10}}>Sans carte bancaire - Sans engagement - 2 min pour demarrer</p>
       </div>
       {!mob&&<div style={{background:C.wh,borderRadius:20,boxShadow:"0 24px 60px rgba(11,61,46,0.12)",padding:24,border:`1px solid ${C.g100}`,position:"relative"}}>
         <div style={{position:"absolute",top:-12,right:-8,background:C.o500,color:C.wh,fontWeight:700,fontSize:"0.78rem",padding:"6px 14px",borderRadius:50}}>⚡ 10s</div>
