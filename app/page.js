@@ -253,7 +253,7 @@ function Dash({art,setArt,onOut,email}){
   const[v,setV]=useState("home");const[devis,setDevis]=useState([]);const[facs,setFacs]=useState([]);const[clis,setClis]=useState([]);const[cur,setCur]=useState(null);const[nav,setNav]=useState(false);
   const addC=c=>{if(c.nom&&!clis.find(x=>x.nom===c.nom))setClis(p=>[...p,{...c,id:Date.now()}])};
   const go=id=>{setV(id);setCur(null);setNav(false)};
-  const items=[{id:"home",i:"🏠",l:"Dashboard"},{id:"new-devis",i:"📝",l:"Nouveau devis"},{id:"devis-list",i:"📋",l:"Devis"},{id:"factures",i:"🧾",l:"Factures"},{id:"clients",i:"👥",l:"Clients"},{id:"settings",i:"⚙️",l:"Entreprise"},{id:"subscription",i:"💳",l:"Abonnement"}];
+  const items=[{id:"home",i:"🏠",l:"Dashboard"},{id:"new-devis",i:"📝",l:"Nouveau devis"},{id:"devis-list",i:"📋",l:"Devis"},{id:"factures",i:"🧾",l:"Factures"},{id:"clients",i:"👥",l:"Clients"},{id:"chantiers",i:"📸",l:"Chantiers"},{id:"stats",i:"📊",l:"Rentabilite"},{id:"settings",i:"⚙️",l:"Entreprise"},{id:"subscription",i:"💳",l:"Abonnement"}];
 
   const sidebar=<div style={{background:C.g900,padding:"16px 0",display:"flex",flexDirection:"column",...(mob?{position:"fixed",top:48,left:0,right:0,bottom:0,zIndex:49}:{position:"sticky",top:0,height:"100vh"})}}>
     {items.map(n=><button key={n.id} onClick={()=>go(n.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 20px",fontSize:"0.84rem",fontWeight:500,cursor:"pointer",border:"none",background:v===n.id?"rgba(255,255,255,0.1)":"none",color:v===n.id?C.g300:"rgba(255,255,255,0.5)",width:"100%",textAlign:"left",fontFamily:"inherit"}}><span>{n.i}</span>{n.l}</button>)}
@@ -272,6 +272,8 @@ function Dash({art,setArt,onOut,email}){
     {v==="factures"&&<FList facs={facs} onV={f=>{setCur(f);setV("view-f")}}/>}
     {v==="view-f"&&cur&&<DocV doc={cur} a={art} type="facture" mob={mob} onBack={()=>go("factures")}/>}
     {v==="clients"&&<CliV clis={clis} setClis={setClis} mob={mob}/>}
+    {v==="chantiers"&&<ChantierV mob={mob}/>}
+    {v==="stats"&&<StatsV devis={devis} facs={facs} clis={clis} mob={mob}/>}
     {v==="settings"&&<SetV art={art} setArt={setArt} mob={mob}/>}
     {v==="subscription"&&<SubV mob={mob}/>}
   </main>;
@@ -452,6 +454,106 @@ function CliV({clis,setClis,mob}){const toast=useT();const[add,setAdd]=useState(
       <div style={{display:"flex",alignItems:"center",gap:8}}><div style={{width:32,height:32,borderRadius:"50%",background:C.g100,display:"flex",alignItems:"center",justifyContent:"center",color:C.g700,fontWeight:700,fontSize:"0.72rem"}}>{c.nom.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2)}</div><div><div style={{fontWeight:600,fontSize:"0.84rem"}}>{c.nom}</div><div style={{fontSize:"0.72rem",color:C.x500}}>{[c.email,c.telephone].filter(Boolean).join(" · ")||"—"}</div></div></div>
       <button onClick={()=>{setClis(p=>p.filter(x=>x.id!==c.id));toast("Supprimé")}} style={{border:"none",background:"none",cursor:"pointer",color:C.x300}}>✕</button>
     </div>)}</div>}
+  </div>;
+}
+
+// CHANTIERS (Carnet de chantier)
+function ChantierV({mob}){
+  const toast=useT();const[chantiers,setChantiers]=useState([]);const[adding,setAdding]=useState(false);const[sel,setSel]=useState(null);
+  const[f,sF]=useState({nom:"",adresse:"",notes:"",status:"en-cours"});const[photos,setPhotos]=useState([]);
+  const u=(k,v)=>sF(p=>({...p,[k]:v}));
+  const addPhoto=e=>{const file=e.target.files[0];if(file){const r=new FileReader();r.onload=ev=>setPhotos(p=>[...p,{id:Date.now(),src:ev.target.result,date:new Date().toLocaleDateString("fr-FR"),note:""}]);r.readAsDataURL(file)}};
+  const save=()=>{if(!f.nom)return;const ch={...f,id:Date.now(),photos,date:new Date().toLocaleDateString("fr-FR")};setChantiers(p=>[ch,...p]);sF({nom:"",adresse:"",notes:"",status:"en-cours"});setPhotos([]);setAdding(false);toast("Chantier ajoute !")};
+
+  if(sel){const ch=chantiers.find(c=>c.id===sel);if(!ch)return null;
+    return <div>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16,flexWrap:"wrap"}}>
+        <button onClick={()=>setSel(null)} style={{...bs,...bsm}}>← Retour</button>
+        <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",color:C.g900}}>{ch.nom}</h1>
+        <span style={{fontSize:"0.75rem",fontWeight:600,padding:"3px 10px",borderRadius:50,background:ch.status==="termine"?C.g100:C.o100,color:ch.status==="termine"?C.g700:C.o500}}>{ch.status==="termine"?"Termine":"En cours"}</span>
+      </div>
+      <div style={crd}>
+        <div style={{marginBottom:16}}>
+          <div style={{fontSize:"0.82rem",color:C.x500,marginBottom:4}}>{ch.adresse||"Pas d'adresse"} - {ch.date}</div>
+          {ch.notes&&<div style={{fontSize:"0.9rem",color:C.x700,lineHeight:1.6,padding:12,background:C.g50,borderRadius:8,marginTop:8}}>{ch.notes}</div>}
+        </div>
+        <h3 style={{fontWeight:700,color:C.g900,marginBottom:12,fontSize:"0.95rem"}}>Photos ({ch.photos.length})</h3>
+        <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:8,marginBottom:12}}>
+          {ch.photos.map((p,i)=><div key={i} style={{borderRadius:12,overflow:"hidden",aspectRatio:"1",background:C.x100}}><img src={p.src} style={{width:"100%",height:"100%",objectFit:"cover"}}/></div>)}
+          {ch.photos.length===0&&<div style={{gridColumn:"1/-1",textAlign:"center",padding:24,color:C.x500}}>Pas encore de photos</div>}
+        </div>
+        <label style={{...bp,...bsm,cursor:"pointer"}}>📷 Ajouter une photo<input type="file" accept="image/*" onChange={e=>{const file=e.target.files[0];if(file){const r=new FileReader();r.onload=ev=>{const updated=chantiers.map(c=>c.id===sel?{...c,photos:[...c.photos,{id:Date.now(),src:ev.target.result,date:new Date().toLocaleDateString("fr-FR")}]}:c);setChantiers(updated);toast("Photo ajoutee !")};r.readAsDataURL(file)}}} style={{display:"none"}}/></label>
+      </div>
+    </div>}
+
+  return <div>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}}>
+      <div><h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",color:C.g900}}>Carnet de chantier</h1><p style={{fontSize:"0.82rem",color:C.x500}}>Photos, notes et suivi de vos chantiers</p></div>
+      <button style={{...bp,...bsm}} onClick={()=>setAdding(!adding)}>+ Nouveau chantier</button>
+    </div>
+    {adding&&<div style={{...crd,marginBottom:14}}>
+      <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:8}}>
+        <div><span style={lbl}>Nom du chantier *</span><input style={inp} placeholder="Renovation SDB M. Dupont" value={f.nom} onChange={e=>u("nom",e.target.value)}/></div>
+        <div><span style={lbl}>Adresse</span><input style={inp} placeholder="12 rue de la Paix, Paris" value={f.adresse} onChange={e=>u("adresse",e.target.value)}/></div>
+      </div>
+      <div style={{marginTop:8}}><span style={lbl}>Notes</span><textarea style={{...inp,minHeight:60,resize:"vertical"}} placeholder="Details du chantier..." value={f.notes} onChange={e=>u("notes",e.target.value)}/></div>
+      <div style={{marginTop:8}}><span style={lbl}>Photos</span>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:4}}>
+          {photos.map((p,i)=><div key={i} style={{width:64,height:64,borderRadius:8,overflow:"hidden"}}><img src={p.src} style={{width:"100%",height:"100%",objectFit:"cover"}}/></div>)}
+          <label style={{width:64,height:64,borderRadius:8,border:`2px dashed ${C.x300}`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:C.x500}}>+<input type="file" accept="image/*" onChange={addPhoto} style={{display:"none"}}/></label>
+        </div>
+      </div>
+      <div style={{display:"flex",gap:6,marginTop:10}}><button style={bp} onClick={save}>Creer</button><button style={bs} onClick={()=>setAdding(false)}>Annuler</button></div>
+    </div>}
+    {chantiers.length===0&&!adding?<div style={{...crd,textAlign:"center",padding:"40px 0"}}><div style={{fontSize:"2.5rem",marginBottom:8}}>📸</div><p style={{color:C.x500,marginBottom:4}}>Documentez vos chantiers</p><p style={{fontSize:"0.82rem",color:C.x300}}>Photos avant/apres, notes, suivi - tout au meme endroit</p></div>
+    :<div style={crd}>{chantiers.map((ch,i)=><div key={i} onClick={()=>setSel(ch.id)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 0",borderBottom:i<chantiers.length-1?`1px solid ${C.x100}`:"none",cursor:"pointer",gap:8}}>
+      <div style={{display:"flex",alignItems:"center",gap:10}}>
+        <div style={{width:44,height:44,borderRadius:10,background:C.g100,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.2rem",flexShrink:0,overflow:"hidden"}}>{ch.photos.length>0?<img src={ch.photos[0].src} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:"🏗️"}</div>
+        <div><div style={{fontWeight:600,fontSize:"0.88rem"}}>{ch.nom}</div><div style={{fontSize:"0.72rem",color:C.x500}}>{ch.adresse||"Pas d'adresse"} - {ch.date} - {ch.photos.length} photo{ch.photos.length>1?"s":""}</div></div>
+      </div>
+      <span style={{fontSize:"0.72rem",fontWeight:600,padding:"3px 10px",borderRadius:50,background:ch.status==="termine"?C.g100:C.o100,color:ch.status==="termine"?C.g700:C.o500,flexShrink:0}}>{ch.status==="termine"?"Termine":"En cours"}</span>
+    </div>)}</div>}
+  </div>;
+}
+
+// STATS (Dashboard rentabilite)
+function StatsV({devis,facs,clis,mob}){
+  const totalCA=facs.reduce((s,f)=>s+parseFloat((f.totalTTC||"0").replace(/[^\d.,]/g,"").replace(",",".")),0);
+  const totalHT=facs.reduce((s,f)=>s+parseFloat((f.totalHT||"0").replace(/[^\d.,]/g,"").replace(",",".")),0);
+  const totalDevis=devis.reduce((s,d)=>s+parseFloat((d.totalTTC||"0").replace(/[^\d.,]/g,"").replace(",",".")),0);
+  const tauxConv=devis.length>0?Math.round((facs.length/devis.length)*100):0;
+  const panierMoyen=facs.length>0?(totalCA/facs.length).toFixed(0):0;
+
+  const topClients=Object.entries(facs.reduce((acc,f)=>{acc[f.clientNom]=(acc[f.clientNom]||0)+parseFloat((f.totalTTC||"0").replace(/[^\d.,]/g,"").replace(",","."));return acc},{})).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  const moisData=facs.reduce((acc,f)=>{const m=f.date||"";acc[m]=(acc[m]||0)+parseFloat((f.totalTTC||"0").replace(/[^\d.,]/g,"").replace(",","."));return acc},{});
+
+  return <div>
+    <div style={{marginBottom:16}}><h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",color:C.g900}}>Rentabilite</h1><p style={{fontSize:"0.82rem",color:C.x500}}>Vue d'ensemble de votre activite</p></div>
+
+    <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:16}}>
+      {[{l:"Chiffre d'affaires",v:totalCA.toFixed(0)+" EUR",c:C.g600,i:"💰"},{l:"Devis en cours",v:totalDevis.toFixed(0)+" EUR",c:C.o500,i:"📝"},{l:"Taux conversion",v:tauxConv+"%",c:C.b500,i:"🎯"},{l:"Panier moyen",v:panierMoyen+" EUR",c:C.g800,i:"📊"}].map((s,i)=><div key={i} style={crd}><div style={{display:"flex",justifyContent:"space-between"}}><span style={{fontSize:"0.72rem",color:C.x500}}>{s.l}</span><span>{s.i}</span></div><div style={{fontSize:"1.4rem",fontWeight:700,color:s.c,marginTop:4,fontFamily:"'Playfair Display',Georgia,serif"}}>{s.v}</div></div>)}
+    </div>
+
+    <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:14}}>
+      <div style={crd}>
+        <h3 style={{fontWeight:700,color:C.g900,marginBottom:12,fontSize:"0.95rem"}}>🏆 Top clients</h3>
+        {topClients.length===0?<p style={{color:C.x500,fontSize:"0.85rem"}}>Les donnees apparaitront avec vos premieres factures</p>
+        :topClients.map(([nom,ca],i)=><div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 0",borderBottom:i<topClients.length-1?`1px solid ${C.x100}`:"none"}}>
+          <div style={{display:"flex",alignItems:"center",gap:8}}><div style={{width:28,height:28,borderRadius:"50%",background:C.g100,display:"flex",alignItems:"center",justifyContent:"center",color:C.g700,fontWeight:700,fontSize:"0.7rem"}}>{i+1}</div><span style={{fontWeight:600,fontSize:"0.85rem"}}>{nom}</span></div>
+          <span style={{fontWeight:700,color:C.g700,fontSize:"0.85rem"}}>{ca.toFixed(0)} EUR</span>
+        </div>)}
+      </div>
+
+      <div style={crd}>
+        <h3 style={{fontWeight:700,color:C.g900,marginBottom:12,fontSize:"0.95rem"}}>📈 Indicateurs</h3>
+        {[{l:"Nombre de devis",v:devis.length},{l:"Nombre de factures",v:facs.length},{l:"Clients uniques",v:clis.length},{l:"Devis en attente",v:devis.filter(d=>d.status==="Brouillon").length},{l:"Factures payees",v:facs.filter(f=>f.status==="Payee").length}].map((s,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:i<4?`1px solid ${C.x100}`:"none",fontSize:"0.88rem"}}>
+          <span style={{color:C.x500}}>{s.l}</span><span style={{fontWeight:600}}>{s.v}</span>
+        </div>)}
+      </div>
+    </div>
+
+    {facs.length===0&&<div style={{...crd,marginTop:14,textAlign:"center",padding:"32px 0"}}><div style={{fontSize:"2.5rem",marginBottom:8}}>📊</div><p style={{color:C.x500}}>Creez des devis et factures pour voir vos stats</p><p style={{fontSize:"0.82rem",color:C.x300,marginTop:4}}>Tout se calcule automatiquement</p></div>}
   </div>;
 }
 
