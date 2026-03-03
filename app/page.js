@@ -215,8 +215,8 @@ function Auth({onAuth,onBack,mode:initMode="signup"}){
         <p style={{fontSize:"0.85rem",color:C.x500,marginBottom:20}}>{mode==="login"?"Accédez à votre espace":"14 jours gratuits, sans CB"}</p>
         <div style={{display:"flex",flexDirection:"column",gap:12}}>
           <div><span style={lbl}>Email</span><input style={inp} type="email" placeholder="contact@entreprise.fr" value={f.email} onChange={e=>u("email",e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()}/></div>
-          <div><span style={lbl}>Mot de passe</span><input style={inp} type="password" placeholder="••••••••" value={f.password} onChange={e=>u("password",e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()}/></div>
-          {mode==="signup"&&<div><span style={lbl}>Confirmer</span><input style={inp} type="password" placeholder="••••••••" value={f.confirm} onChange={e=>u("confirm",e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()}/></div>}
+          {!forgot&&<div><span style={lbl}>Mot de passe</span><input style={inp} type="password" placeholder="••••••••" value={f.password} onChange={e=>u("password",e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()}/></div>}
+          {mode==="signup"&&!forgot&&<div><span style={lbl}>Confirmer</span><input style={inp} type="password" placeholder="••••••••" value={f.confirm} onChange={e=>u("confirm",e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()}/></div>}
           {msg&&<div style={{fontSize:"0.82rem",color:C.g700,background:C.g100,padding:"8px 12px",borderRadius:8}}>{msg}</div>}
           {err&&<div style={{fontSize:"0.82rem",color:C.r500,background:C.r100,padding:"8px 12px",borderRadius:8}}>{err}</div>}
           <button style={{...bp,width:"100%",justifyContent:"center",opacity:loading?0.6:1}} onClick={forgot?resetPw:go} disabled={loading}>{loading?"Chargement...":forgot?"Envoyer le lien":mode==="login"?"Se connecter →":"Créer mon compte →"}</button>
