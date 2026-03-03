@@ -420,7 +420,9 @@ function DList({devis,onV,onNew}){const[q,setQ]=useState("");const[fil,setFil]=u
 // DOC VIEW
 function DocV({doc,a,type,mob,onBack,onEdit,onFac}){
   const toast=useT();const ref=useRef();const isD=type==="devis";const T=isD?"DEVIS":"FACTURE";
-  const print=()=>{const el=ref.current;if(!el)return;const w=window.open("","","width=800,height=1000");w.document.write(`<html><head><title>${T} ${doc.num}</title><style>body{font-family:-apple-system,sans-serif;padding:32px;color:#1a1a1a;font-size:13px}table{width:100%;border-collapse:collapse}th,td{padding:8px;text-align:left;border-bottom:1px solid #eee}th{background:#f5f5f5;font-size:11px}@media print{body{padding:16px}}</style></head><body>${el.innerHTML}<script>setTimeout(()=>window.print(),400)<\/script></body></html>`);w.document.close()};
+  const[sending,setSending]=useState(false);const[emailModal,setEmailModal]=useState(false);const[toEmail,setToEmail]=useState(doc.clientEmail||"");
+  const genPDF=()=>{const el=ref.current;if(!el)return;const w=window.open("","","width=800,height=1100");w.document.write("<html><head><title>"+T+" "+doc.num+"</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,Helvetica,sans-serif;padding:40px;color:#1a1a1a;font-size:13px;line-height:1.5}@media print{body{padding:20px}}</style></head><body>"+ref.current.innerHTML+"<scr"+"ipt>setTimeout(function(){window.print()},500)</scr"+"ipt></body></html>");w.document.close()};
+  const sendEmail=async()=>{if(!toEmail){toast("Entrez un email","error");return}setSending(true);try{const r=await fetch("/api/send-email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({to:toEmail,type:T,num:doc.num,clientNom:doc.clientNom,entreprise:a.entreprise,totalTTC:doc.totalTTC,lignes:doc.lignes,description:doc.description,conditions:doc.conditions,tvaRate:doc.tvaRate,totalHT:doc.totalHT,tva:doc.tva,artisan:a})});const data=await r.json();if(data.error)throw new Error(data.error);toast("Email envoye !");setEmailModal(false)}catch(e){toast("Erreur envoi email","error")}setSending(false)};
   return <div>
     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16,flexWrap:"wrap"}}>
       <button onClick={onBack} style={{...bs,...bsm}}>←</button>
@@ -428,10 +430,11 @@ function DocV({doc,a,type,mob,onBack,onEdit,onFac}){
       <div style={{display:"flex",gap:6,marginLeft:mob?0:"auto",flexWrap:"wrap"}}>
         {isD&&onEdit&&<button style={{...bs,...bsm}} onClick={onEdit}>✏️ Modifier</button>}
         {isD&&onFac&&<button style={{...bs,...bsm}} onClick={onFac}>🧾 Facture</button>}
-        <button style={{...bs,...bsm}} onClick={print}>📥 PDF</button>
-        <button style={{...bp,...bsm}} onClick={()=>toast("Connectez un service email","info")}>📤 Envoyer</button>
+        <button style={{...bs,...bsm}} onClick={genPDF}>📥 PDF</button>
+        <button style={{...bp,...bsm}} onClick={()=>setEmailModal(true)}>📤 Envoyer</button>
       </div>
     </div>
+    {emailModal&&<div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.5)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}><div style={{background:C.wh,borderRadius:16,padding:24,maxWidth:400,width:"100%"}}><h3 style={{fontWeight:700,color:C.g900,marginBottom:12}}>Envoyer par email</h3><div style={{marginBottom:12}}><span style={lbl}>Email du client</span><input style={inp} type="email" placeholder="client@email.com" value={toEmail} onChange={e=>setToEmail(e.target.value)}/></div><div style={{display:"flex",gap:8}}><button style={{...bp,flex:1,justifyContent:"center",opacity:sending?0.6:1}} onClick={sendEmail} disabled={sending}>{sending?"Envoi...":"Envoyer"}</button><button style={{...bs,flex:1,justifyContent:"center"}} onClick={()=>setEmailModal(false)}>Annuler</button></div></div></div>}
     <div ref={ref} style={{background:C.wh,borderRadius:16,padding:mob?20:32,boxShadow:"0 4px 20px rgba(0,0,0,0.05)",border:`1px solid ${C.g100}`,maxWidth:780,margin:"0 auto"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:24,flexWrap:"wrap",gap:12}}>
         <div>{a.logo&&<img src={a.logo} style={{maxHeight:48,maxWidth:140,marginBottom:6,display:"block"}}/>}<div style={{fontWeight:700,color:C.g800}}>{a.entreprise}</div><div style={{fontSize:"0.78rem",color:C.x500,lineHeight:1.6}}>{a.adresse&&<div>{a.adresse}{a.cp&&`, ${a.cp} ${a.ville||""}`}</div>}<div>{a.telephone} · {a.email}</div>{a.siret&&<div>SIRET: {a.siret}</div>}</div></div>
