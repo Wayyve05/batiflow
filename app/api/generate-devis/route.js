@@ -11,6 +11,24 @@ export async function POST(request) {
       )
     }
 
+    const prompt = [
+      'Tu es un assistant devis pour un artisan ' + (metier || 'du batiment') + ' francais.',
+      '',
+      'CHANTIER: "' + description + '"',
+      'CLIENT: ' + clientNom,
+      urgence === 'urgent' ? 'URGENT - majorer de 20%' : '',
+      '',
+      'REGLES STRICTES:',
+      '- Genere UNIQUEMENT les postes que artisan a decrits. Ninvente RIEN.',
+      '- Si artisan ecrit "pose carrelage 15m2", mets SEULEMENT pose carrelage. Najoute PAS depose, ragerage, joints, nettoyage, deplacement sauf si EXPLICITEMENT mentionne.',
+      '- En cas de doute, NE PAS ajouter le poste.',
+      '- Prix realistes France 2025.',
+      '- 2 a 6 lignes maximum.',
+      '',
+      'JSON uniquement, sans markdown:',
+      '{"lignes":[{"poste":"Description","unite":"m2/u/forfait/h","quantite":1,"prixUnitaireHT":100}],"conditions":"Paiement a 30 jours"}'
+    ].join('\n')
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -21,19 +39,7 @@ export async function POST(request) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
-        messages: [
-          {
-            role: 'user',
-            content: `Tu es un assistant pour artisans ${metier || 'du batiment'} francais.
-Genere un devis detaille en JSON pour: "${description}"
-Client: ${clientNom}${urgence === 'urgent' ? ' (URGENT)' : ''}
-
-Reponds UNIQUEMENT en JSON valide sans markdown:
-{"lignes":[{"poste":"Description","unite":"m2/u/forfait/h","quantite":1,"prixUnitaireHT":100}],"conditions":"Conditions de paiement"}
-
-Regles: prix realistes France 2025, fournitures ET main d'oeuvre separes, deplacement si pertinent, 4-10 lignes.`,
-          },
-        ],
+        messages: [{ role: 'user', content: prompt }],
       }),
     })
 
