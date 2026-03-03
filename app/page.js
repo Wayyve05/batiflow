@@ -360,15 +360,9 @@ function DForm({art,clis,addC,mob,onDone}){
   const toast=useT();const[f,sF]=useState({clientNom:"",clientAdresse:"",clientEmail:"",clientTel:"",description:"",urgence:"normal"});
   const[loading,setLoading]=useState(false);const[err,setErr]=useState(null);const[showC,setShowC]=useState(false);
   const u=(k,v)=>sF(p=>({...p,[k]:v}));
-  const gen=async()=>{setLoading(true);setErr(null);try{
-    const r=await fetch("/api/generate-devis",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({description:f.description,clientNom:f.clientNom,metier:art.metier,urgence:f.urgence})});
-    const data=await r.json();if(data.error)throw new Error(data.error);const txt=JSON.stringify(data);
-    const p=data;const tv=parseFloat(art.tvaRate||"10")/100;
-    const lignes=p.lignes.map(l=>({...l,totalHT:(l.quantite*l.prixUnitaireHT).toFixed(2)}));
-    const ht=lignes.reduce((s,l)=>s+parseFloat(l.totalHT),0);
-    addC({nom:f.clientNom,adresse:f.clientAdresse,email:f.clientEmail,telephone:f.clientTel});
-    onDone({...f,lignes,totalHT:ht.toFixed(2)+" €",tva:(ht*tv).toFixed(2)+" €",totalTTC:(ht+ht*tv).toFixed(2)+" €",tvaRate:art.tvaRate||"10",conditions:p.conditions||"Paiement à 30 jours"});
-  }catch(e){setErr("Erreur. Réessayez.");toast("Erreur","error")}setLoading(false)};
+  const fetchRetry=async(url,opts,retries=2)=>{for(let i=0;i<=retries;i++){try{const r=await fetch(url,opts);if(!r.ok&&i<retries)continue;return r}catch(e){if(i===retries)throw e;await new Promise(r=>setTimeout(r,1000))}}};
+  const gen=async()=>{setLoading(true);setErr(null);try{const r=await fetchRetry("/api/generate-devis",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({description:f.description,clientNom:f.clientNom,metier:art.metier,urgence:f.urgence})});const data=await r.json();if(data.error)throw new Error(data.error);const p=data;const tv=parseFloat(art.tvaRate||"10")/100;const lignes=p.lignes.map(l=>({...l,totalHT:(l.quantite*l.prixUnitaireHT).toFixed(2)}));const ht=lignes.reduce((s,l)=>s+parseFloat(l.totalHT),0);addC({nom:f.clientNom,adresse:f.clientAdresse,email:f.clientEmail,telephone:f.clientTel});onDone({...f,lignes,totalHT:ht.toFixed(2)+" EUR",tva:(ht*tv).toFixed(2)+" EUR",totalTTC:(ht+ht*tv).toFixed(2)+" EUR",tvaRate:art.tvaRate||"10",conditions:p.conditions||"Paiement a 30 jours"});}catch(e){setErr("Erreur. Reessayez.");toast("Erreur","error")}setLoading(false)};
+
   return <div>
     <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",color:C.g900,marginBottom:16}}>Nouveau devis</h1>
     <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:14}}>
