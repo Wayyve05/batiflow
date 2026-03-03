@@ -185,7 +185,7 @@ function Legal({title,onBack}){
 // ===================== AUTH =====================
 function Auth({onAuth,onBack,mode:initMode="signup"}){
   const mob=useMobile();const[mode,setMode]=useState(initMode);const[loading,setLoading]=useState(false);
-  const[f,sF]=useState({email:"",password:"",confirm:""});const[err,setErr]=useState("");
+  const[f,sF]=useState({email:"",password:"",confirm:""});const[err,setErr]=useState("");const[msg,setMsg]=useState("");const[forgot,setForgot]=useState(false);const resetPw=async()=>{setErr("");setMsg("");if(!f.email){setErr("Entrez votre email");return}setLoading(true);try{const{error}=await supabase.auth.resetPasswordForEmail(f.email,{redirectTo:window.location.origin});if(error)throw error;setMsg("Email envoye !")}catch(e){setErr(e.message)}setLoading(false)};
   const u=(k,v)=>sF(p=>({...p,[k]:v}));
   const go=async()=>{setErr("");setLoading(true);
     if(!f.email||!f.password){setLoading(false);return setErr("Remplissez tous les champs")}
@@ -217,8 +217,10 @@ function Auth({onAuth,onBack,mode:initMode="signup"}){
           <div><span style={lbl}>Email</span><input style={inp} type="email" placeholder="contact@entreprise.fr" value={f.email} onChange={e=>u("email",e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()}/></div>
           <div><span style={lbl}>Mot de passe</span><input style={inp} type="password" placeholder="••••••••" value={f.password} onChange={e=>u("password",e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()}/></div>
           {mode==="signup"&&<div><span style={lbl}>Confirmer</span><input style={inp} type="password" placeholder="••••••••" value={f.confirm} onChange={e=>u("confirm",e.target.value)} onKeyDown={e=>e.key==="Enter"&&go()}/></div>}
+          {msg&&<div style={{fontSize:"0.82rem",color:C.g700,background:C.g100,padding:"8px 12px",borderRadius:8}}>{msg}</div>}
           {err&&<div style={{fontSize:"0.82rem",color:C.r500,background:C.r100,padding:"8px 12px",borderRadius:8}}>{err}</div>}
-          <button style={{...bp,width:"100%",justifyContent:"center",opacity:loading?0.6:1}} onClick={go} disabled={loading}>{loading?"Chargement...":mode==="login"?"Se connecter →":"Créer mon compte →"}</button>
+          <button style={{...bp,width:"100%",justifyContent:"center",opacity:loading?0.6:1}} onClick={forgot?resetPw:go} disabled={loading}>{loading?"Chargement...":forgot?"Envoyer le lien":mode==="login"?"Se connecter →":"Créer mon compte →"}</button>
+          {mode==="login"&&<button onClick={()=>{setForgot(!forgot);setErr("");setMsg("")}} style={{color:C.x500,border:"none",background:"none",cursor:"pointer",fontFamily:"inherit",fontSize:"0.78rem",display:"block",width:"100%",textAlign:"center",marginTop:4}}>{forgot?"Retour":"Mot de passe oublie ?"}</button>}
           <div style={{textAlign:"center",fontSize:"0.82rem",color:C.x500}}>{mode==="login"?"Pas de compte ? ":"Déjà inscrit ? "}<button onClick={()=>{setMode(mode==="login"?"signup":"login");setErr("")}} style={{color:C.g700,fontWeight:600,border:"none",background:"none",cursor:"pointer",fontFamily:"inherit",fontSize:"0.82rem"}}>{mode==="login"?"S'inscrire":"Se connecter"}</button></div>
         </div>
       </div>
