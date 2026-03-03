@@ -387,7 +387,7 @@ function DForm({art,clis,addC,mob,onDone}){
       <div style={crd}>
         <h3 style={{fontWeight:700,color:C.g900,marginBottom:12,fontSize:"0.95rem"}}>🏗️ Chantier</h3>
         <div><span style={lbl}>Description *</span><textarea style={{...inp,minHeight:120,resize:"vertical"}} placeholder={"Rénovation SDB\nDouche italienne\nCarrelage 15m²"} value={f.description} onChange={e=>u("description",e.target.value)}/></div>
-        <div style={{background:C.g50,borderRadius:8,padding:10,fontSize:"0.78rem",color:C.x700,marginTop:8}}>💡 Plus c'est précis, meilleur sera le devis.</div>
+        <div style={{background:C.g50,borderRadius:8,padding:10,fontSize:"0.78rem",color:C.x700,marginTop:8}}>💡 Plus c'est précis, meilleur sera le devis (ex: "pose carrelage 12m2 a 45EUR/m2").</div>
       </div>
     </div>
     <div style={{marginTop:16,textAlign:"center"}}>
