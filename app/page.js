@@ -275,7 +275,7 @@ function Onboard({onDone}){
 // ===================== DASHBOARD =====================
 function Dash({art,setArt,onOut,email,uid}){
   const toast=useT();const mob=useMobile();
-  const[v,setV]=useState("home");const[devis,setDevis]=useState([]);const[facs,setFacs]=useState([]);const[clis,setClis]=useState([]);const[cur,setCur]=useState(null);const[nav,setNav]=useState(false);const[loaded,setLoaded]=useState(false);
+  const[v,setV]=useState("home");const[devis,setDevis]=useState([]);const[facs,setFacs]=useState([]);const[clis,setClis]=useState([]);const[cur,setCur]=useState(null);const[chantiers,setChantiers]=useState([]);const[nav,setNav]=useState(false);const[loaded,setLoaded]=useState(false);
 
   useEffect(()=>{if(!uid)return;
     Promise.all([
@@ -314,9 +314,9 @@ function Dash({art,setArt,onOut,email,uid}){
     {v==="view-d"&&cur&&<DocV doc={cur} a={art} type="devis" mob={mob} onBack={()=>go("devis-list")} onEdit={()=>setV("edit-d")} onFac={()=>{const f2={...cur,id:Date.now(),date:new Date().toLocaleDateString("fr-FR"),status:"Emise",num:`FAC-${new Date().getFullYear()}-${String(facs.length+1).padStart(4,"0")}`};setFacs(p=>[f2,...p]);saveFac(f2);setDevis(p=>p.map(d=>d.id===cur.id?{...d,status:"Accepte"}:d));setCur(f2);setV("view-f");toast("Facture creee !")}}/>}
     {v==="edit-d"&&cur&&<EditD doc={cur} mob={mob} onSave={up=>{setDevis(p=>p.map(d=>d.id===up.id?up:d));setCur(up);setV("view-d");toast("Devis modifié ✓")}} onX={()=>setV("view-d")}/>}
     {v==="factures"&&<FList facs={facs} onV={f=>{setCur(f);setV("view-f")}}/>}
-    {v==="view-f"&&cur&&<DocV doc={cur} a={art} type="facture" mob={mob} onBack={()=>go("factures")} onPay={()=>{setFacs(p=>p.map(f=>f.id===cur.id?{...f,status:"Payee"}:f));setCur({...cur,status:"Payee"});toast("Facture marquee payee !")}}/>}
-    {v==="clients"&&<CliV clis={clis} setClis={setClis} mob={mob} devis={devis} facs={facs} onVD={d=>{setCur(d);setV("view-d")}} onVF={f=>{setCur(f);setV("view-f")}}/>}
-    {v==="chantiers"&&<ChantierV mob={mob}/>}
+    {v==="view-f"&&cur&&<DocV doc={cur} a={art} type="facture" mob={mob} onBack={()=>go("factures")} onPay={()=>{setFacs(p=>p.map(f=>f.id===cur.id?{...f,status:"Payee"}:f));setCur({...cur,status:"Payee"});toast("Facture encaissee !")}}/>}
+    {v==="clients"&&<CliV clis={clis} setClis={setClis} mob={mob} devis={devis} facs={facs} onVD={d=>{setCur(d);setV("view-d")}} onVF={f=>{setCur(f);setV("view-f")}} chantiers={chantiers}/>}
+    {v==="chantiers"&&<ChantierV mob={mob} chantiers={chantiers} setChantiers={setChantiers} clis={clis}/>}
     {v==="stats"&&<StatsV devis={devis} facs={facs} clis={clis} mob={mob}/>}
     {v==="settings"&&<SetV art={art} setArt={setArt} mob={mob}/>}
     {v==="subscription"&&<SubV mob={mob}/>}
@@ -427,7 +427,7 @@ function DocV({doc,a,type,mob,onBack,onEdit,onFac,onPay}){
         {isD&&onEdit&&<button style={{...bs,...bsm}} onClick={onEdit}>✏️ Modifier</button>}
         {isD&&onFac&&<button style={{...bs,...bsm}} onClick={onFac}>🧾 Facture</button>}
         <button style={{...bs,...bsm}} onClick={genPDF}>📥 PDF</button>
-        <button style={{...bp,...bsm}} onClick={()=>setEmailModal(true)}>📤 Envoyer</button>{!isD&&onPay&&doc.status!=="Payee"&&<button style={{...bp,...bsm,background:C.g700}} onClick={onPay}>✓ Payee</button>}
+        <button style={{...bp,...bsm}} onClick={()=>setEmailModal(true)}>📤 Envoyer</button>{!isD&&onPay&&doc.status!=="Payee"&&<button style={{...bp,...bsm,background:C.g700}} onClick={onPay}>✓ Encaissee</button>}
       </div>
     </div>
     {emailModal&&<div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.5)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}><div style={{background:C.wh,borderRadius:16,padding:24,maxWidth:400,width:"100%"}}><h3 style={{fontWeight:700,color:C.g900,marginBottom:12}}>Envoyer par email</h3><div style={{marginBottom:12}}><span style={lbl}>Email du client</span><input style={inp} type="email" placeholder="client@email.com" value={toEmail} onChange={e=>setToEmail(e.target.value)}/></div><div style={{display:"flex",gap:8}}><button style={{...bp,flex:1,justifyContent:"center",opacity:sending?0.6:1}} onClick={sendEmail} disabled={sending}>{sending?"Envoi...":"Envoyer"}</button><button style={{...bs,flex:1,justifyContent:"center"}} onClick={()=>setEmailModal(false)}>Annuler</button></div></div></div>}
@@ -475,10 +475,10 @@ function FList({facs,onV}){const[q,setQ]=useState("");const ff=facs.filter(f=>!q
 }
 
 // CLIENTS
-function CliV({clis,setClis,mob,devis,facs,onVD,onVF}){const toast=useT();const[add,setAdd]=useState(false);const[q,setQ]=useState("");
+function CliV({clis,setClis,mob,devis,facs,onVD,onVF,chantiers}){const toast=useT();const[add,setAdd]=useState(false);const[q,setQ]=useState("");
   const[f,sF]=useState({nom:"",adresse:"",email:"",telephone:""});const u=(k,v)=>sF(p=>({...p,[k]:v}));const[sel,setSel]=useState(null);
   const fc=clis.filter(c=>!q||c.nom.toLowerCase().includes(q.toLowerCase()));
-  if(sel){const c=clis.find(x=>x.id===sel);if(!c){setSel(null);return null}const cd=(devis||[]).filter(d=>d.clientNom===c.nom);const cf=(facs||[]).filter(f=>f.clientNom===c.nom);return <div><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}><button onClick={()=>setSel(null)} style={{...bs,...bsm}}>← Retour</button><h1 style={{fontFamily:"'Playfair Display,Georgia,serif",fontSize:"1.4rem",color:C.g900}}>{c.nom}</h1></div><div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:14}}><div style={crd}><h3 style={{fontWeight:700,color:C.g900,marginBottom:8,fontSize:"0.95rem"}}>Infos</h3><div style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.8}}>{c.adresse&&<div>{c.adresse}</div>}{c.email&&<div>{c.email}</div>}{c.telephone&&<div>{c.telephone}</div>}</div></div><div style={crd}><h3 style={{fontWeight:700,color:C.g900,marginBottom:8,fontSize:"0.95rem"}}>Devis ({cd.length})</h3>{cd.length===0?<p style={{color:C.x500,fontSize:"0.82rem"}}>Aucun devis</p>:cd.map((d,i)=><div key={i} onClick={()=>onVD&&onVD(d)} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:i<cd.length-1?"1px solid "+C.x100:"none",cursor:"pointer",fontSize:"0.82rem"}}><span>{d.num}</span><span style={{fontWeight:600}}>{d.totalTTC}</span></div>)}</div><div style={crd}><h3 style={{fontWeight:700,color:C.g900,marginBottom:8,fontSize:"0.95rem"}}>Factures ({cf.length})</h3>{cf.length===0?<p style={{color:C.x500,fontSize:"0.82rem"}}>Aucune facture</p>:cf.map((f,i)=><div key={i} onClick={()=>onVF&&onVF(f)} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:i<cf.length-1?"1px solid "+C.x100:"none",cursor:"pointer",fontSize:"0.82rem"}}><span>{f.num}</span><span style={{fontWeight:600}}>{f.totalTTC}</span></div>)}</div></div></div>}
+  if(sel){const c=clis.find(x=>x.id===sel);if(!c){setSel(null);return null}const cd=(devis||[]).filter(d=>d.clientNom===c.nom);const cf=(facs||[]).filter(f=>f.clientNom===c.nom);const cc=(chantiers||[]).filter(ch=>ch.clientNom===c.nom);return <div><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}><button onClick={()=>setSel(null)} style={{...bs,...bsm}}>← Retour</button><h1 style={{fontFamily:"'Playfair Display,Georgia,serif",fontSize:"1.4rem",color:C.g900}}>{c.nom}</h1></div><div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:14}}><div style={crd}><h3 style={{fontWeight:700,color:C.g900,marginBottom:8,fontSize:"0.95rem"}}>Infos</h3><div style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.8}}>{c.adresse&&<div>{c.adresse}</div>}{c.email&&<div>{c.email}</div>}{c.telephone&&<div>{c.telephone}</div>}</div></div><div style={crd}><h3 style={{fontWeight:700,color:C.g900,marginBottom:8,fontSize:"0.95rem"}}>Devis ({cd.length})</h3>{cd.length===0?<p style={{color:C.x500,fontSize:"0.82rem"}}>Aucun devis</p>:cd.map((d,i)=><div key={i} onClick={()=>onVD&&onVD(d)} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:i<cd.length-1?"1px solid "+C.x100:"none",cursor:"pointer",fontSize:"0.82rem"}}><span>{d.num}</span><span style={{fontWeight:600}}>{d.totalTTC}</span></div>)}</div><div style={crd}><h3 style={{fontWeight:700,color:C.g900,marginBottom:8,fontSize:"0.95rem"}}>Factures ({cf.length})</h3>{cf.length===0?<p style={{color:C.x500,fontSize:"0.82rem"}}>Aucune facture</p>:cf.map((f,i)=><div key={i} onClick={()=>onVF&&onVF(f)} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:i<cf.length-1?"1px solid "+C.x100:"none",cursor:"pointer",fontSize:"0.82rem"}}><span>{f.num}</span><span style={{fontWeight:600}}>{f.totalTTC}</span></div>)}</div><div style={crd}><h3 style={{fontWeight:700,color:C.g900,marginBottom:8,fontSize:"0.95rem"}}>Chantiers ({cc.length})</h3>{cc.length===0?<p style={{color:C.x500,fontSize:"0.82rem"}}>Aucun chantier</p>:cc.map((ch,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:i<cc.length-1?"1px solid "+C.x100:"none",fontSize:"0.82rem"}}><span>{ch.nom}</span><span style={{fontSize:"0.72rem",color:ch.status==="termine"?C.g700:C.o500}}>{ch.status==="termine"?"Termine":"En cours"}</span></div>)}</div></div></div>}
   return <div>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}}>
       <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",color:C.g900}}>Clients</h1>
@@ -500,12 +500,12 @@ function CliV({clis,setClis,mob,devis,facs,onVD,onVF}){const toast=useT();const[
 }
 
 // CHANTIERS (Carnet de chantier)
-function ChantierV({mob}){
-  const toast=useT();const[chantiers,setChantiers]=useState([]);const[adding,setAdding]=useState(false);const[sel,setSel]=useState(null);
-  const[f,sF]=useState({nom:"",adresse:"",notes:"",status:"en-cours"});const[photos,setPhotos]=useState([]);
+function ChantierV({mob,chantiers,setChantiers,clis}){
+  const toast=useT();const[adding,setAdding]=useState(false);const[sel,setSel]=useState(null);
+  const[f,sF]=useState({nom:"",adresse:"",notes:"",status:"en-cours",clientNom:""});const[photos,setPhotos]=useState([]);
   const u=(k,v)=>sF(p=>({...p,[k]:v}));
   const addPhoto=e=>{const file=e.target.files[0];if(file){const r=new FileReader();r.onload=ev=>setPhotos(p=>[...p,{id:Date.now(),src:ev.target.result,date:new Date().toLocaleDateString("fr-FR"),note:""}]);r.readAsDataURL(file)}};
-  const save=()=>{if(!f.nom)return;const ch={...f,id:Date.now(),photos,date:new Date().toLocaleDateString("fr-FR")};setChantiers(p=>[ch,...p]);sF({nom:"",adresse:"",notes:"",status:"en-cours"});setPhotos([]);setAdding(false);toast("Chantier ajoute !")};
+  const save=()=>{if(!f.nom)return;const ch={...f,id:Date.now(),photos,date:new Date().toLocaleDateString("fr-FR")};setChantiers(p=>[ch,...p]);sF({nom:"",adresse:"",notes:"",status:"en-cours",clientNom:""});setPhotos([]);setAdding(false);toast("Chantier ajoute !")};
 
   if(sel){const ch=chantiers.find(c=>c.id===sel);if(!ch)return null;
     return <div>
@@ -535,7 +535,7 @@ function ChantierV({mob}){
     </div>
     {adding&&<div style={{...crd,marginBottom:14}}>
       <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:8}}>
-        <div><span style={lbl}>Nom du chantier *</span><input style={inp} placeholder="Renovation SDB M. Dupont" value={f.nom} onChange={e=>u("nom",e.target.value)}/></div>
+        <div><span style={lbl}>Nom du chantier *</span><input style={inp} placeholder="Renovation SDB M. Dupont" value={f.nom} onChange={e=>u("nom",e.target.value)}/></div><div><span style={lbl}>Client</span><select style={{...inp,cursor:"pointer"}} value={f.clientNom} onChange={e=>u("clientNom",e.target.value)}><option value="">-- Choisir un client --</option>{(clis||[]).map((c,i)=><option key={i} value={c.nom}>{c.nom}</option>)}</select></div>
         <div><span style={lbl}>Adresse</span><input style={inp} placeholder="12 rue de la Paix, Paris" value={f.adresse} onChange={e=>u("adresse",e.target.value)}/></div>
       </div>
       <div style={{marginTop:8}}><span style={lbl}>Notes</span><textarea style={{...inp,minHeight:60,resize:"vertical"}} placeholder="Details du chantier..." value={f.notes} onChange={e=>u("notes",e.target.value)}/></div>
@@ -551,7 +551,7 @@ function ChantierV({mob}){
     :<div style={crd}>{chantiers.map((ch,i)=><div key={i} onClick={()=>setSel(ch.id)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 0",borderBottom:i<chantiers.length-1?`1px solid ${C.x100}`:"none",cursor:"pointer",gap:8}}>
       <div style={{display:"flex",alignItems:"center",gap:10}}>
         <div style={{width:44,height:44,borderRadius:10,background:C.g100,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.2rem",flexShrink:0,overflow:"hidden"}}>{ch.photos.length>0?<img src={ch.photos[0].src} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:"🏗️"}</div>
-        <div><div style={{fontWeight:600,fontSize:"0.88rem"}}>{ch.nom}</div><div style={{fontSize:"0.72rem",color:C.x500}}>{ch.adresse||"Pas d'adresse"} - {ch.date} - {ch.photos.length} photo{ch.photos.length>1?"s":""}</div></div>
+        <div><div style={{fontWeight:600,fontSize:"0.88rem"}}>{ch.nom}{ch.clientNom&&<span style={{fontWeight:400,color:C.x500}}> — {ch.clientNom}</span>}</div><div style={{fontSize:"0.72rem",color:C.x500}}>{ch.adresse||"Pas d'adresse"} - {ch.date} - {ch.photos.length} photo{ch.photos.length>1?"s":""}</div></div>
       </div>
       <span style={{fontSize:"0.72rem",fontWeight:600,padding:"3px 10px",borderRadius:50,background:ch.status==="termine"?C.g100:C.o100,color:ch.status==="termine"?C.g700:C.o500,flexShrink:0}}>{ch.status==="termine"?"Termine":"En cours"}</span>
     </div>)}</div>}
