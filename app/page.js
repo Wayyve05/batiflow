@@ -314,8 +314,8 @@ function Dash({art,setArt,onOut,email,uid}){
     {v==="view-d"&&cur&&<DocV doc={cur} a={art} type="devis" mob={mob} onBack={()=>go("devis-list")} onEdit={()=>setV("edit-d")} onFac={()=>{const f2={...cur,id:Date.now(),date:new Date().toLocaleDateString("fr-FR"),status:"Emise",num:`FAC-${new Date().getFullYear()}-${String(facs.length+1).padStart(4,"0")}`};setFacs(p=>[f2,...p]);saveFac(f2);setDevis(p=>p.map(d=>d.id===cur.id?{...d,status:"Accepte"}:d));setCur(f2);setV("view-f");toast("Facture creee !")}}/>}
     {v==="edit-d"&&cur&&<EditD doc={cur} mob={mob} onSave={up=>{setDevis(p=>p.map(d=>d.id===up.id?up:d));setCur(up);setV("view-d");toast("Devis modifié ✓")}} onX={()=>setV("view-d")}/>}
     {v==="factures"&&<FList facs={facs} onV={f=>{setCur(f);setV("view-f")}}/>}
-    {v==="view-f"&&cur&&<DocV doc={cur} a={art} type="facture" mob={mob} onBack={()=>go("factures")}/>}
-    {v==="clients"&&<CliV clis={clis} setClis={setClis} mob={mob}/>}
+    {v==="view-f"&&cur&&<DocV doc={cur} a={art} type="facture" mob={mob} onBack={()=>go("factures")} onPay={()=>{setFacs(p=>p.map(f=>f.id===cur.id?{...f,status:"Payee"}:f));setCur({...cur,status:"Payee"});toast("Facture marquee payee !")}}/>}
+    {v==="clients"&&<CliV clis={clis} setClis={setClis} mob={mob} devis={devis} facs={facs} onVD={d=>{setCur(d);setV("view-d")}} onVF={f=>{setCur(f);setV("view-f")}}/>}
     {v==="chantiers"&&<ChantierV mob={mob}/>}
     {v==="stats"&&<StatsV devis={devis} facs={facs} clis={clis} mob={mob}/>}
     {v==="settings"&&<SetV art={art} setArt={setArt} mob={mob}/>}
@@ -414,7 +414,7 @@ function DList({devis,onV,onNew}){const[q,setQ]=useState("");const[fil,setFil]=u
 }
 
 // DOC VIEW
-function DocV({doc,a,type,mob,onBack,onEdit,onFac}){
+function DocV({doc,a,type,mob,onBack,onEdit,onFac,onPay}){
   const toast=useT();const ref=useRef();const isD=type==="devis";const T=isD?"DEVIS":"FACTURE";
   const[sending,setSending]=useState(false);const[emailModal,setEmailModal]=useState(false);const[toEmail,setToEmail]=useState(doc.clientEmail||"");
   const genPDF=()=>{const el=ref.current;if(!el)return;const w=window.open("","","width=800,height=1100");w.document.write("<html><head><title>"+T+" "+doc.num+"</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,Helvetica,sans-serif;padding:40px;color:#1a1a1a;font-size:13px;line-height:1.5}@media print{body{padding:20px}}</style></head><body>"+ref.current.innerHTML+"<scr"+"ipt>setTimeout(function(){window.print()},500)</scr"+"ipt></body></html>");w.document.close()};
@@ -427,7 +427,7 @@ function DocV({doc,a,type,mob,onBack,onEdit,onFac}){
         {isD&&onEdit&&<button style={{...bs,...bsm}} onClick={onEdit}>✏️ Modifier</button>}
         {isD&&onFac&&<button style={{...bs,...bsm}} onClick={onFac}>🧾 Facture</button>}
         <button style={{...bs,...bsm}} onClick={genPDF}>📥 PDF</button>
-        <button style={{...bp,...bsm}} onClick={()=>setEmailModal(true)}>📤 Envoyer</button>
+        <button style={{...bp,...bsm}} onClick={()=>setEmailModal(true)}>📤 Envoyer</button>{!isD&&onPay&&doc.status!=="Payee"&&<button style={{...bp,...bsm,background:C.g700}} onClick={onPay}>✓ Payee</button>}
       </div>
     </div>
     {emailModal&&<div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.5)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}><div style={{background:C.wh,borderRadius:16,padding:24,maxWidth:400,width:"100%"}}><h3 style={{fontWeight:700,color:C.g900,marginBottom:12}}>Envoyer par email</h3><div style={{marginBottom:12}}><span style={lbl}>Email du client</span><input style={inp} type="email" placeholder="client@email.com" value={toEmail} onChange={e=>setToEmail(e.target.value)}/></div><div style={{display:"flex",gap:8}}><button style={{...bp,flex:1,justifyContent:"center",opacity:sending?0.6:1}} onClick={sendEmail} disabled={sending}>{sending?"Envoi...":"Envoyer"}</button><button style={{...bs,flex:1,justifyContent:"center"}} onClick={()=>setEmailModal(false)}>Annuler</button></div></div></div>}
@@ -444,7 +444,7 @@ function DocV({doc,a,type,mob,onBack,onEdit,onFac}){
       </table></div>
       <div style={{display:"flex",justifyContent:"flex-end"}}><div style={{width:220}}>{[["Total HT",doc.totalHT],[`TVA (${doc.tvaRate||"10"}%)`,doc.tva]].map(([l,v],i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",fontSize:"0.85rem"}}><span style={{color:C.x500}}>{l}</span><span style={{fontWeight:600}}>{v}</span></div>)}<div style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderTop:`2px solid ${C.g200}`,marginTop:4}}><span style={{fontWeight:700,color:C.g800}}>TTC</span><span style={{fontWeight:800,color:C.g700,fontSize:"1.15rem",fontFamily:"'Playfair Display',Georgia,serif"}}>{doc.totalTTC}</span></div></div></div>
       <div style={{marginTop:20,padding:14,background:C.g50,borderRadius:10,fontSize:"0.78rem",color:C.x700,lineHeight:1.6}}>
-        <strong>Conditions:</strong> {doc.conditions}{isD&&<><br/><div style={{marginTop:14,borderTop:`1px dashed ${C.x300}`,paddingTop:10,display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:8}}><span>Date: ___________</span><span>Signature: ___________</span></div></>}
+        <strong>Conditions:</strong> {doc.conditions}<br/><div style={{marginTop:8,fontSize:"0.72rem",color:C.x500}}>{a.assurance&&<div>Assurance decennale: {a.assurance}</div>}{a.siret&&<div>SIRET: {a.siret}</div>}<div>TVA non applicable, art. 293 B du CGI</div></div>{isD&&<><div style={{marginTop:14,borderTop:`1px dashed ${C.x300}`,paddingTop:10}}><div style={{fontSize:"0.72rem",color:C.x500,marginBottom:8}}>Devis valable 3 mois. Bon pour accord :</div><div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:8}}><span>Date: ___________</span><span>Signature: ___________</span></div></div></>}
       </div>
     </div>
   </div>;
@@ -475,9 +475,10 @@ function FList({facs,onV}){const[q,setQ]=useState("");const ff=facs.filter(f=>!q
 }
 
 // CLIENTS
-function CliV({clis,setClis,mob}){const toast=useT();const[add,setAdd]=useState(false);const[q,setQ]=useState("");
-  const[f,sF]=useState({nom:"",adresse:"",email:"",telephone:""});const u=(k,v)=>sF(p=>({...p,[k]:v}));
+function CliV({clis,setClis,mob,devis,facs,onVD,onVF}){const toast=useT();const[add,setAdd]=useState(false);const[q,setQ]=useState("");
+  const[f,sF]=useState({nom:"",adresse:"",email:"",telephone:""});const u=(k,v)=>sF(p=>({...p,[k]:v}));const[sel,setSel]=useState(null);
   const fc=clis.filter(c=>!q||c.nom.toLowerCase().includes(q.toLowerCase()));
+  if(sel){const c=clis.find(x=>x.id===sel);if(!c){setSel(null);return null}const cd=(devis||[]).filter(d=>d.clientNom===c.nom);const cf=(facs||[]).filter(f=>f.clientNom===c.nom);return <div><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}><button onClick={()=>setSel(null)} style={{...bs,...bsm}}>← Retour</button><h1 style={{fontFamily:"'Playfair Display,Georgia,serif",fontSize:"1.4rem",color:C.g900}}>{c.nom}</h1></div><div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:14}}><div style={crd}><h3 style={{fontWeight:700,color:C.g900,marginBottom:8,fontSize:"0.95rem"}}>Infos</h3><div style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.8}}>{c.adresse&&<div>{c.adresse}</div>}{c.email&&<div>{c.email}</div>}{c.telephone&&<div>{c.telephone}</div>}</div></div><div style={crd}><h3 style={{fontWeight:700,color:C.g900,marginBottom:8,fontSize:"0.95rem"}}>Devis ({cd.length})</h3>{cd.length===0?<p style={{color:C.x500,fontSize:"0.82rem"}}>Aucun devis</p>:cd.map((d,i)=><div key={i} onClick={()=>onVD&&onVD(d)} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:i<cd.length-1?"1px solid "+C.x100:"none",cursor:"pointer",fontSize:"0.82rem"}}><span>{d.num}</span><span style={{fontWeight:600}}>{d.totalTTC}</span></div>)}</div><div style={crd}><h3 style={{fontWeight:700,color:C.g900,marginBottom:8,fontSize:"0.95rem"}}>Factures ({cf.length})</h3>{cf.length===0?<p style={{color:C.x500,fontSize:"0.82rem"}}>Aucune facture</p>:cf.map((f,i)=><div key={i} onClick={()=>onVF&&onVF(f)} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:i<cf.length-1?"1px solid "+C.x100:"none",cursor:"pointer",fontSize:"0.82rem"}}><span>{f.num}</span><span style={{fontWeight:600}}>{f.totalTTC}</span></div>)}</div></div></div>}
   return <div>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}}>
       <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",color:C.g900}}>Clients</h1>
@@ -491,7 +492,7 @@ function CliV({clis,setClis,mob}){const toast=useT();const[add,setAdd]=useState(
     </div><div style={{display:"flex",gap:6,marginTop:8}}><button style={bp} onClick={()=>{if(!f.nom)return;setClis(p=>[...p,{...f,id:Date.now()}]);sF({nom:"",adresse:"",email:"",telephone:""});setAdd(false);toast("Client ajouté ✓")}}>Ajouter</button><button style={bs} onClick={()=>setAdd(false)}>Annuler</button></div></div>}
     {clis.length>0&&<div style={{marginBottom:12}}><SearchBar value={q} onChange={setQ} placeholder="Rechercher un client..."/></div>}
     {fc.length===0?<div style={{...crd,textAlign:"center",padding:"32px 0"}}><p style={{color:C.x500}}>{clis.length===0?"Se remplira automatiquement":"Aucun résultat"}</p></div>
-    :<div style={crd}>{fc.map((c,i)=><div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 0",borderBottom:i<fc.length-1?`1px solid ${C.x100}`:"none"}}>
+    :<div style={crd}>{fc.map((c,i)=><div key={i} onClick={()=>setSel(c.id)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 0",cursor:"pointer",borderBottom:i<fc.length-1?`1px solid ${C.x100}`:"none"}}>
       <div style={{display:"flex",alignItems:"center",gap:8}}><div style={{width:32,height:32,borderRadius:"50%",background:C.g100,display:"flex",alignItems:"center",justifyContent:"center",color:C.g700,fontWeight:700,fontSize:"0.72rem"}}>{c.nom.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2)}</div><div><div style={{fontWeight:600,fontSize:"0.84rem"}}>{c.nom}</div><div style={{fontSize:"0.72rem",color:C.x500}}>{[c.email,c.telephone].filter(Boolean).join(" · ")||"—"}</div></div></div>
       <button onClick={()=>{setClis(p=>p.filter(x=>x.id!==c.id));toast("Supprimé")}} style={{border:"none",background:"none",cursor:"pointer",color:C.x300}}>✕</button>
     </div>)}</div>}
@@ -559,11 +560,11 @@ function ChantierV({mob}){
 
 // STATS (Dashboard rentabilite)
 function StatsV({devis,facs,clis,mob}){
-  const totalCA=facs.reduce((s,f)=>s+parseFloat((f.totalTTC||"0").replace(/[^\d.,]/g,"").replace(",",".")),0);
-  const totalHT=facs.reduce((s,f)=>s+parseFloat((f.totalHT||"0").replace(/[^\d.,]/g,"").replace(",",".")),0);
+  const facPayees=facs.filter(f=>f.status==="Payee");const totalCA=facPayees.reduce((s,f)=>s+parseFloat((f.totalTTC||"0").replace(/[^\d.,]/g,"").replace(",",".")),0);
+  const totalHT=facPayees.reduce((s,f)=>s+parseFloat((f.totalHT||"0").replace(/[^\d.,]/g,"").replace(",",".")),0);
   const totalDevis=devis.reduce((s,d)=>s+parseFloat((d.totalTTC||"0").replace(/[^\d.,]/g,"").replace(",",".")),0);
   const tauxConv=devis.length>0?Math.round((facs.length/devis.length)*100):0;
-  const panierMoyen=facs.length>0?(totalCA/facs.length).toFixed(0):0;
+  const panierMoyen=facPayees.length>0?(totalCA/facPayees.length).toFixed(0):0;
 
   const topClients=Object.entries(facs.reduce((acc,f)=>{acc[f.clientNom]=(acc[f.clientNom]||0)+parseFloat((f.totalTTC||"0").replace(/[^\d.,]/g,"").replace(",","."));return acc},{})).sort((a,b)=>b[1]-a[1]).slice(0,5);
 
@@ -573,7 +574,7 @@ function StatsV({devis,facs,clis,mob}){
     <div style={{marginBottom:16}}><h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",color:C.g900}}>Rentabilite</h1><p style={{fontSize:"0.82rem",color:C.x500}}>Vue d'ensemble de votre activite</p></div>
 
     <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(4,1fr)",gap:10,marginBottom:16}}>
-      {[{l:"Chiffre d'affaires",v:totalCA.toFixed(0)+" EUR",c:C.g600,i:"💰"},{l:"Devis en cours",v:totalDevis.toFixed(0)+" EUR",c:C.o500,i:"📝"},{l:"Taux conversion",v:tauxConv+"%",c:C.b500,i:"🎯"},{l:"Panier moyen",v:panierMoyen+" EUR",c:C.g800,i:"📊"}].map((s,i)=><div key={i} style={crd}><div style={{display:"flex",justifyContent:"space-between"}}><span style={{fontSize:"0.72rem",color:C.x500}}>{s.l}</span><span>{s.i}</span></div><div style={{fontSize:"1.4rem",fontWeight:700,color:s.c,marginTop:4,fontFamily:"'Playfair Display',Georgia,serif"}}>{s.v}</div></div>)}
+      {[{l:"CA (factures payees)",v:totalCA.toFixed(0)+" EUR",c:C.g600,i:"💰"},{l:"Devis en cours",v:totalDevis.toFixed(0)+" EUR",c:C.o500,i:"📝"},{l:"Taux conversion",v:tauxConv+"%",c:C.b500,i:"🎯"},{l:"Panier moyen",v:panierMoyen+" EUR",c:C.g800,i:"📊"}].map((s,i)=><div key={i} style={crd}><div style={{display:"flex",justifyContent:"space-between"}}><span style={{fontSize:"0.72rem",color:C.x500}}>{s.l}</span><span>{s.i}</span></div><div style={{fontSize:"1.4rem",fontWeight:700,color:s.c,marginTop:4,fontFamily:"'Playfair Display',Georgia,serif"}}>{s.v}</div></div>)}
     </div>
 
     <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:14}}>

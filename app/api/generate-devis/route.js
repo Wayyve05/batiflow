@@ -18,14 +18,13 @@ export async function POST(request) {
       'CLIENT: ' + clientNom,
       urgence === 'urgent' ? 'URGENT - majorer de 20%' : '',
       '',
-      'REGLES STRICTES:',
-      '- Genere UNIQUEMENT les postes que artisan a decrits. Ninvente RIEN.',
-      '- Si artisan ecrit "pose carrelage 15m2", mets SEULEMENT pose carrelage. Najoute PAS depose, ragerage, joints, nettoyage, deplacement sauf si EXPLICITEMENT mentionne.',
-      '- En cas de doute, NE PAS ajouter le poste.',
+      'REGLES:',
+      '- Reste fidele a ce que artisan decrit. Si la description est courte, fais un devis court (1-3 lignes).',
+      '- Ne rajoute PAS de postes non mentionnes (pas de depose, nettoyage, deplacement sauf si mentionne).',
       '- Prix realistes France 2025.',
-      '- 2 a 6 lignes maximum.',
+      '- 1 a 6 lignes maximum.',
       '',
-      'JSON uniquement, sans markdown:',
+      'IMPORTANT: Reponds UNIQUEMENT avec le JSON, aucun texte avant ou apres:',
       '{"lignes":[{"poste":"Description","unite":"m2/u/forfait/h","quantite":1,"prixUnitaireHT":100}],"conditions":"Paiement a 30 jours"}'
     ].join('\n')
 
@@ -45,7 +44,21 @@ export async function POST(request) {
 
     const data = await response.json()
     const text = data.content?.map((c) => c.text || '').join('') || ''
-    const parsed = JSON.parse(text.replace(/```json|```/g, '').trim())
+    
+    // Robust JSON parsing - extract JSON even if there is text around it
+    let parsed
+    const clean = text.replace(/```json|```/g, '').trim()
+    try {
+      parsed = JSON.parse(clean)
+    } catch (e) {
+      // Try to find JSON object in the text
+      const match = clean.match(/\{[\s\S]*"lignes"[\s\S]*\}/)
+      if (match) {
+        parsed = JSON.parse(match[0])
+      } else {
+        throw new Error('Format de reponse invalide')
+      }
+    }
 
     return NextResponse.json(parsed)
   } catch (error) {
