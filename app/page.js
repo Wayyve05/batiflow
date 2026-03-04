@@ -627,26 +627,36 @@ function SetV({art,setArt,mob}){const toast=useT();const[f,sF]=useState({...art}
 }
 
 // SUBSCRIPTION
-function SubV({mob}){const toast=useT();const[sel,setSel]=useState("pro");const[pay,setPay]=useState(false);
-  const plans=[{id:"starter",n:"Starter",p:"14,99",f:["Devis illimités","PDF","Email","Support"]},{id:"pro",n:"Pro",p:"34,99",pop:true,f:["Tout Starter","Factures","Relances","Marges","Dashboard"]},{id:"entreprise",n:"Entreprise",p:"49,99",f:["Tout Pro","Suivi chantier","Contrats","5 users"]}];
-  return <div><h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",color:C.g900,marginBottom:4}}>Abonnement</h1><p style={{color:C.x500,marginBottom:16,fontSize:"0.85rem"}}>Essai gratuit — <strong style={{color:C.g700}}>14 jours</strong></p>
-    {!pay?<><div style={{display:"grid",gridTemplateColumns:mob?"1fr":"repeat(3,1fr)",gap:12}}>
-      {plans.map(p=><div key={p.id} onClick={()=>setSel(p.id)} style={{...crd,cursor:"pointer",border:`2px solid ${sel===p.id?C.g500:C.x100}`,position:"relative"}}>
-        {p.pop&&<div style={{position:"absolute",top:-10,left:"50%",transform:"translateX(-50%)",background:C.g500,color:C.wh,fontSize:"0.68rem",fontWeight:700,padding:"3px 10px",borderRadius:50}}>Recommandé</div>}
-        <div style={{fontWeight:600}}>{p.n}</div>
-        <div style={{display:"flex",alignItems:"baseline",gap:2,margin:"8px 0"}}><span style={{fontSize:"1.8rem",fontWeight:800,color:C.g800,fontFamily:"'Playfair Display',Georgia,serif"}}>{p.p}</span><span style={{color:C.x500,fontSize:"0.82rem"}}>€/mois</span></div>
-        {p.f.map((f,j)=><div key={j} style={{display:"flex",alignItems:"center",gap:6,fontSize:"0.78rem",color:C.x700,padding:"2px 0"}}><Chk/>{f}</div>)}
-      </div>)}
-    </div>
-    <div style={{marginTop:14,textAlign:"center"}}><button style={bp} onClick={()=>setPay(true)}>Choisir {plans.find(p=>p.id===sel)?.n} →</button></div>
-    </>:<div style={{...crd,maxWidth:380}}>
-      <h3 style={{fontWeight:700,marginBottom:14}}>💳 {plans.find(p=>p.id===sel)?.n}</h3>
-      <div style={{display:"flex",flexDirection:"column",gap:8}}>
-        <div><span style={lbl}>Carte</span><input style={inp} placeholder="4242 4242 4242 4242"/></div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}><div><span style={lbl}>Exp.</span><input style={inp} placeholder="12/26"/></div><div><span style={lbl}>CVC</span><input style={inp} placeholder="123"/></div></div>
-        <div style={{display:"flex",gap:6}}><button style={{...bs,flex:1,justifyContent:"center"}} onClick={()=>setPay(false)}>←</button><button style={{...bp,flex:2,justifyContent:"center"}} onClick={()=>toast("Paiement simulé — Stripe requis","info")}>Confirmer</button></div>
+function SubV({mob}){const toast=useT();
+  const features=["Devis illimites generes par IA","Factures en 1 clic","Signature electronique","Envoi par email","Export CSV comptable","Carnet de chantier avec photos","Dashboard rentabilite","Dossier client complet","Suivi de paiement","Support prioritaire"];
+  return <div><h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",color:C.g900,marginBottom:4}}>Abonnement</h1><p style={{color:C.x500,marginBottom:20,fontSize:"0.85rem"}}>Essai gratuit — <strong style={{color:C.g700}}>14 jours</strong>, sans carte bancaire</p>
+    <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:16,maxWidth:700}}>
+      <div style={{...crd,border:`2px solid ${C.g500}`,position:"relative"}}>
+        <div style={{position:"absolute",top:-10,left:"50%",transform:"translateX(-50%)",background:C.g500,color:C.wh,fontSize:"0.68rem",fontWeight:700,padding:"3px 12px",borderRadius:50}}>Plan unique</div>
+        <div style={{textAlign:"center",marginBottom:16,marginTop:8}}>
+          <div style={{fontSize:"2.2rem",fontWeight:800,color:C.g800,fontFamily:"'Playfair Display',Georgia,serif"}}>29<span style={{fontSize:"1rem",fontWeight:500}}>EUR/mois</span></div>
+          <div style={{fontSize:"0.82rem",color:C.x500,marginTop:4}}>ou <strong style={{color:C.g700}}>249 EUR/an</strong> (2 mois offerts)</div>
+        </div>
+        <div style={{borderTop:`1px solid ${C.x100}`,paddingTop:12}}>
+          {features.map((f,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:6,fontSize:"0.82rem",color:C.x700,padding:"4px 0"}}><Chk/>{f}</div>)}
+        </div>
+        <button style={{...bp,width:"100%",justifyContent:"center",marginTop:16}} onClick={()=>toast("Paiement Stripe bientot disponible","info")}>Commencer maintenant</button>
       </div>
-    </div>}
+      <div style={{display:"flex",flexDirection:"column",gap:12}}>
+        <div style={crd}>
+          <h3 style={{fontWeight:700,color:C.g900,fontSize:"0.95rem",marginBottom:8}}>Pourquoi 29 EUR/mois ?</h3>
+          <p style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.6}}>Vous perdez en moyenne 5h par semaine sur vos devis et factures. A 40 EUR/h, ca fait 800 EUR/mois. Batiflow vous en fait gagner au moins la moitie pour moins de 1 EUR par jour.</p>
+        </div>
+        <div style={crd}>
+          <h3 style={{fontWeight:700,color:C.g900,fontSize:"0.95rem",marginBottom:8}}>Sans engagement</h3>
+          <p style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.6}}>Annulez a tout moment. Vos donnees restent accessibles 30 jours apres annulation. Pas de frais caches.</p>
+        </div>
+        <div style={crd}>
+          <h3 style={{fontWeight:700,color:C.g900,fontSize:"0.95rem",marginBottom:8}}>Une question ?</h3>
+          <p style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.6}}>Ecrivez-nous a support@batiflow.fr</p>
+        </div>
+      </div>
+    </div>
   </div>;
 }
 
