@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
+import { createClient } from '@supabase/supabase-js';
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || '', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '');
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { to, type, num, clientNom, entreprise, totalTTC, lignes, description, conditions, tvaRate, totalHT, tva, artisan, devisId } = body;
+    const { to, type, num, clientNom, entreprise, totalTTC, lignes, description, conditions, tvaRate, totalHT, tva, artisan, devisId, relance } = body;
     if (!to || !type || !num) return NextResponse.json({ error: "Champs manquants" }, { status: 400 });
     const RESEND_KEY = process.env.RESEND_API_KEY;
     if (!RESEND_KEY) return NextResponse.json({ error: "Service email non configure" }, { status: 500 });
@@ -12,6 +14,11 @@ const acceptBtn = type === "DEVIS" && devisId ? '<div style=\"text-align:center;
     const res = await fetch("https://api.resend.com/emails", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer "+RESEND_KEY }, body: JSON.stringify({ from: entreprise+" <onboarding@resend.dev>", to: [to], subject: type+" "+num+" - "+entreprise, html }) });
     const data = await res.json();
     if (data.error) return NextResponse.json({ error: data.error.message }, { status: 500 });
+    if (type === "DEVIS" && devisId && relance && relance !== "none") {
+      const days = parseInt(relance);
+      const relanceDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+      await supabase.from('devis').update({ relance_date: relanceDate, client_email: to }).eq('id', devisId);
+    }
     return NextResponse.json({ success: true });
   } catch (e) { return NextResponse.json({ error: e.message }, { status: 500 }); }
 }
