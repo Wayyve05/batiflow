@@ -276,6 +276,8 @@ function Onboard({onDone}){
 function Dash({art,setArt,onOut,email,uid}){
   const toast=useT();const mob=useMobile();
   const[v,setV]=useState("home");const[devis,setDevis]=useState([]);const[facs,setFacs]=useState([]);const[clis,setClis]=useState([]);const[cur,setCur]=useState(null);const[chantiers,setChantiers]=useState([]);const[selCh,setSelCh]=useState(null);const[nav,setNav]=useState(false);const[loaded,setLoaded]=useState(false);
+  const isTrialExpired=art.plan==="trial"&&art.trialEndsAt&&new Date()>new Date(art.trialEndsAt);
+  const isPro=art.plan==="pro";
 
   useEffect(()=>{if(!uid)return;
     Promise.all([
@@ -307,6 +309,8 @@ function Dash({art,setArt,onOut,email,uid}){
     </div>
   </div>;
 
+  if(isTrialExpired&&!isPro){const[ld,setLd]=useState(false);const checkout=async()=>{setLd(true);try{const r=await fetch("/api/stripe-checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userId:uid,email})});const d=await r.json();if(d.url)window.location.href=d.url}catch(e){}setLd(false)};return <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${C.g900},${C.g800})`,padding:24}}><div style={{...crd,maxWidth:440,textAlign:"center",padding:36}}><div style={{fontSize:"3rem",marginBottom:16}}>⏰</div><h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.5rem",color:C.g900,marginBottom:8}}>Votre essai est termine</h2><p style={{color:C.x500,marginBottom:24,lineHeight:1.6}}>Passez a QUOTY Pro pour continuer a generer vos devis par IA, envoyer vos factures et gerer vos clients.</p><div style={{fontSize:"2rem",fontWeight:800,color:C.g800,fontFamily:"'Playfair Display',Georgia,serif",marginBottom:4}}>29€ <span style={{fontSize:"0.9rem",fontWeight:400,color:C.x500}}>/mois</span></div><div style={{fontSize:"0.85rem",color:C.x500,marginBottom:20}}>ou 249€/an (2 mois offerts)</div><button style={{...bp,width:"100%",justifyContent:"center",padding:"14px 24px",opacity:ld?0.6:1}} onClick={checkout} disabled={ld}>{ld?"Redirection...":"Passer a QUOTY Pro →"}</button><div style={{fontSize:"0.78rem",color:C.x500,marginTop:8}}>Sans engagement · Annulez quand vous voulez</div><button onClick={onOut} style={{marginTop:16,color:C.x500,border:"none",background:"none",cursor:"pointer",fontFamily:"inherit",fontSize:"0.82rem"}}>Se deconnecter</button></div></div>}
+
   const main=<main style={{padding:mob?16:24,background:C.x100,overflowY:"auto",paddingTop:mob?60:24,minHeight:"100vh"}}>
     {v==="home"&&<HView d={devis} f={facs} a={art} go={go} onNew={()=>go("new-devis")} onVD={d=>{setCur(d);setV("view-d")}} mob={mob}/>}
     {v==="new-devis"&&<DForm art={art} clis={clis} addC={addC} mob={mob} onDone={d=>{const nd={...d,id:Date.now(),date:new Date().toLocaleDateString("fr-FR"),status:"Brouillon",num:`DEV-${new Date().getFullYear()}-${String(devis.length+1).padStart(4,"0")}`};setDevis(p=>[nd,...p]);saveDevis(nd);setCur(nd);setV("view-d");toast("Devis sauvegarde !")}}/>}
@@ -319,7 +323,7 @@ function Dash({art,setArt,onOut,email,uid}){
     {v==="chantiers"&&<ChantierV mob={mob} chantiers={chantiers} setChantiers={setChantiers} clis={clis} initSel={selCh} onClearSel={()=>setSelCh(null)}/>}
     {v==="stats"&&<StatsV devis={devis} facs={facs} clis={clis} mob={mob}/>}
     {v==="settings"&&<SetV art={art} setArt={setArt} mob={mob}/>}
-    {v==="subscription"&&<SubV mob={mob}/>}
+    {v==="subscription"&&<SubV mob={mob} uid={uid} email={email} art={art}/>}
   </main>;
 
   if(mob) return <div>
@@ -628,7 +632,8 @@ function SetV({art,setArt,mob}){const toast=useT();const[f,sF]=useState({...art}
 }
 
 // SUBSCRIPTION
-function SubV({mob}){const toast=useT();
+function SubV({mob,uid,email,art}){const toast=useT();const[loading,setLoading]=useState(false);
+  const checkout=async()=>{setLoading(true);try{const r=await fetch("/api/stripe-checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userId:uid,email:email})});const data=await r.json();if(data.url){window.location.href=data.url}else{toast("Erreur paiement","error")}}catch(e){toast("Erreur","error")}setLoading(false)};
   const features=["Devis illimites generes par IA","Factures en 1 clic","Signature electronique","Envoi par email","Export CSV comptable","Carnet de chantier avec photos","Dashboard rentabilite","Dossier client complet","Suivi de paiement","Support prioritaire"];
   return <div><h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",color:C.g900,marginBottom:4}}>Abonnement</h1><p style={{color:C.x500,marginBottom:20,fontSize:"0.85rem"}}>Essai gratuit — <strong style={{color:C.g700}}>14 jours</strong>, sans carte bancaire</p>
     <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:16,maxWidth:700}}>
@@ -641,7 +646,7 @@ function SubV({mob}){const toast=useT();
         <div style={{borderTop:`1px solid ${C.x100}`,paddingTop:12}}>
           {features.map((f,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:6,fontSize:"0.82rem",color:C.x700,padding:"4px 0"}}><Chk/>{f}</div>)}
         </div>
-        <button style={{...bp,width:"100%",justifyContent:"center",marginTop:16}} onClick={()=>toast("Paiement Stripe bientot disponible","info")}>Commencer maintenant</button>
+        <button style={{...bp,width:"100%",justifyContent:"center",marginTop:16,opacity:loading?0.6:1}} onClick={checkout} disabled={loading}>{loading?"Redirection...":"Commencer maintenant"}</button>
       </div>
       <div style={{display:"flex",flexDirection:"column",gap:12}}>
         <div style={crd}>
@@ -670,7 +675,7 @@ export default function App(){
       if(session?.user){
         setEm(session.user.email);setUid(session.user.id);
         supabase.from("profiles").select("*").eq("id",session.user.id).single().then(({data})=>{
-          if(data&&data.entreprise){setArt({entreprise:data.entreprise,siret:data.siret||"",adresse:data.adresse||"",cp:data.code_postal||"",ville:data.ville||"",telephone:data.telephone||"",email:data.email||"",metier:data.metier||"plombier",assurance:data.assurance||"",tvaRate:String(data.tva_rate||"10"),logo:data.logo_url||null});setP("dash")}
+          if(data&&data.entreprise){setArt({entreprise:data.entreprise,siret:data.siret||"",adresse:data.adresse||"",cp:data.code_postal||"",ville:data.ville||"",telephone:data.telephone||"",email:data.email||"",metier:data.metier||"plombier",assurance:data.assurance||"",tvaRate:String(data.tva_rate||"10"),logo:data.logo_url||null,plan:data.plan||"trial",trialEndsAt:data.trial_ends_at||null,assureur:data.assureur||"",couverture:data.couverture||""});setP("dash")}
           else setP("onboard")
         })
       }else setP("landing")
@@ -689,7 +694,7 @@ export default function App(){
        p==="auth-s"?<Auth mode="signup" onAuth={({email,userId})=>{setEm(email);setUid(userId);setP("onboard")}} onBack={()=>setP("landing")}/>:
        p==="auth-l"?<Auth mode="login" onAuth={({email,userId})=>{setEm(email);setUid(userId);
          supabase.from("profiles").select("*").eq("id",userId).single().then(({data})=>{
-           if(data&&data.entreprise){setArt({entreprise:data.entreprise,siret:data.siret||"",adresse:data.adresse||"",cp:data.code_postal||"",ville:data.ville||"",telephone:data.telephone||"",email:data.email||"",metier:data.metier||"plombier",assurance:data.assurance||"",tvaRate:String(data.tva_rate||"10"),logo:data.logo_url||null});setP("dash")}
+           if(data&&data.entreprise){setArt({entreprise:data.entreprise,siret:data.siret||"",adresse:data.adresse||"",cp:data.code_postal||"",ville:data.ville||"",telephone:data.telephone||"",email:data.email||"",metier:data.metier||"plombier",assurance:data.assurance||"",tvaRate:String(data.tva_rate||"10"),logo:data.logo_url||null,plan:data.plan||"trial",trialEndsAt:data.trial_ends_at||null,assureur:data.assureur||"",couverture:data.couverture||""});setP("dash")}
            else setP("onboard")
          })
        }} onBack={()=>setP("landing")}/>:
