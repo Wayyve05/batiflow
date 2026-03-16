@@ -39,7 +39,7 @@ const SearchBar=({value,onChange,placeholder})=><input style={{...inp,maxWidth:3
 // ===================== LANDING =====================
 function Landing({onStart,onLogin,onLegal}){
   const mob=useMobile();const[faq,setFaq]=useState(null);const[menu,setMenu]=useState(false);
-  const features=[{i:"📝",t:"Devis IA en 10 secondes",d:"Decrivez le chantier en 2 lignes. L'IA genere un devis complet avec fournitures, main d'oeuvre et prix du marche."},{i:"🧾",t:"Factures conformes en 1 clic",d:"Devis accepte ? Un clic et la facture est prete avec toutes les mentions legales obligatoires."},{i:"🔔",t:"Relances automatiques",d:"Plus de devis oublies. Batiflow relance vos clients au bon moment par email."},{i:"📊",t:"Marges en temps reel",d:"Sachez exactement combien vous gagnez sur chaque chantier. Fini les mauvaises surprises."},{i:"👥",t:"Fichier clients organise",d:"Tous vos clients, historique des devis et factures. Retrouvez tout en 2 secondes."},{i:"📱",t:"Fonctionne sur telephone",d:"Sur le chantier ? Creez un devis depuis votre telephone et envoyez-le sur place."}];
+  const features=[{i:"📝",t:"Devis IA en 10 secondes",d:"Decrivez le chantier en 2 lignes. L'IA genere un devis complet avec fournitures, main d'oeuvre et prix du marche."},{i:"🧾",t:"Factures conformes en 1 clic",d:"Devis accepte ? Un clic et la facture est prete avec toutes les mentions legales obligatoires."},{i:"🔔",t:"Relances automatiques",d:"Plus de devis oublies. QUOTY relance vos clients au bon moment par email."},{i:"📊",t:"Marges en temps reel",d:"Sachez exactement combien vous gagnez sur chaque chantier. Fini les mauvaises surprises."},{i:"👥",t:"Fichier clients organise",d:"Tous vos clients, historique des devis et factures. Retrouvez tout en 2 secondes."},{i:"📱",t:"Fonctionne sur telephone",d:"Sur le chantier ? Creez un devis depuis votre telephone et envoyez-le sur place."}];
   const plans=[{n:"Starter",p:"14,99",f:["Devis illimités","PDF personnalisés","Envoi email","Support"]},{n:"Pro",p:"34,99",pop:true,f:["Tout Starter","Factures","Relances auto","Marges","Dashboard","Support prio"]},{n:"Entreprise",p:"49,99",f:["Tout Pro","Suivi chantier","Contrats","5 utilisateurs","Accompagnement"]}];
   const faqs=[{q:"Adapté à mon métier ?",a:"Oui ! Plombiers, électriciens, peintres, carreleurs…"},{q:"Pas doué en informatique ?",a:"Si vous savez envoyer un SMS, c'est bon. Support en 24h."},{q:"Devis conformes ?",a:"Mentions légales incluses : SIRET, assurance, TVA."},{q:"Annulation ?",a:"Sans engagement. Résiliation en un clic."},{q:"Comment ça marche ?",a:"Décrivez le chantier, l'IA génère les lignes + prix. Vous ajustez."},{q:"Données sécurisées ?",a:"Hébergées en France, chiffrées, RGPD."}];
   const scr=id=>{const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth"})};
@@ -48,7 +48,7 @@ function Landing({onStart,onLogin,onLegal}){
     <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     {/* NAV */}
     <nav style={{position:"sticky",top:0,zIndex:100,display:"flex",alignItems:"center",justifyContent:"space-between",padding:mob?"12px 16px":"14px 32px",background:"rgba(255,252,248,0.92)",backdropFilter:"blur(16px)",borderBottom:`1px solid ${C.g100}`}}>
-      <div style={{display:"flex",alignItems:"center",gap:8,fontWeight:800,fontSize:mob?"1.1rem":"1.3rem",color:C.g800}}><Logo s={mob?28:32}/> Batiflow</div>
+      <div style={{display:"flex",alignItems:"center",gap:8,fontWeight:800,fontSize:mob?"1.1rem":"1.3rem",color:C.g800}}><Logo s={mob?28:32}/> QUOTY</div>
       {mob?<button onClick={()=>setMenu(!menu)} style={{border:"none",background:"none",cursor:"pointer",fontSize:"1.5rem"}}>{menu?"✕":"☰"}</button>:
       <div style={{display:"flex",alignItems:"center",gap:24}}>
         {["outils","tarifs","faq"].map(s=><button key={s} onClick={()=>scr(s)} style={{fontSize:"0.9rem",fontWeight:500,color:C.x700,cursor:"pointer",border:"none",background:"none",fontFamily:"inherit"}}>{s==="outils"?"Outils":s==="tarifs"?"Tarifs":"FAQ"}</button>)}
@@ -67,7 +67,7 @@ function Landing({onStart,onLogin,onLegal}){
       <div>
         <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"6px 16px",background:C.g100,borderRadius:50,fontSize:"0.82rem",fontWeight:500,color:C.g800,marginBottom:20}}><span style={{width:8,height:8,borderRadius:"50%",background:C.g500,display:"inline-block"}}/>N°1 de la gestion artisan par IA</div>
         <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:mob?"2.2rem":"3.2rem",lineHeight:1.1,color:C.g900,marginBottom:20}}>Vos devis en <em style={{color:C.g600,fontStyle:"normal"}}>10 secondes</em>,<br/>vos factures en 1 clic</h1>
-        <p style={{fontSize:"1.05rem",lineHeight:1.65,color:C.x700,marginBottom:12,maxWidth:480}}>Vous perdez 5h par semaine sur la paperasse ? Batiflow utilise l'IA pour automatiser vos devis, factures et relances.</p>
+        <p style={{fontSize:"1.05rem",lineHeight:1.65,color:C.x700,marginBottom:12,maxWidth:480}}>Vous perdez 5h par semaine sur la paperasse ? QUOTY utilise l'IA pour automatiser vos devis, factures et relances.</p>
         <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
           {["Decrivez votre chantier, l'IA genere un devis detaille avec les bons prix","Transformez un devis accepte en facture conforme en 1 clic","Relance automatique des devis non signes"].map((t,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8,fontSize:"0.9rem",color:C.x700}}><Chk/>{t}</div>)}
         </div>
@@ -101,7 +101,7 @@ function Landing({onStart,onLogin,onLegal}){
     {/* PAIN */}
     <section style={{background:C.g900,padding:mob?"48px 16px":"80px 32px"}}><div style={{maxWidth:1200,margin:"0 auto"}}>
       <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:mob?"1.8rem":"2.4rem",color:C.wh,marginBottom:12}}>Vous perdez du temps et de l'argent</h2>
-      <p style={{color:"rgba(255,255,255,0.5)",marginBottom:32,maxWidth:500}}>Sans Batiflow, voici ce que ca vous coute chaque semaine :</p>
+      <p style={{color:"rgba(255,255,255,0.5)",marginBottom:32,maxWidth:500}}>Sans QUOTY, voici ce que ca vous coute chaque semaine :</p>
       <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"repeat(3,1fr)",gap:16}}>
         {[["5h","Perdues/semaine"],["40%","Devis jamais relancés"],["0","Vision sur vos marges"]].map(([s,t],i)=><div key={i} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:16,padding:24}}>
           <div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"2rem",fontWeight:700,color:C.g400}}>{s}</div>
@@ -159,21 +159,21 @@ function Landing({onStart,onLogin,onLegal}){
     {/* FOOTER */}
     <footer style={{background:C.g900,padding:mob?"32px 16px":"48px 32px"}}>
       <div style={{maxWidth:1200,margin:"0 auto",display:"grid",gridTemplateColumns:mob?"1fr 1fr":"2fr 1fr 1fr 1fr",gap:mob?24:48}}>
-        <div><div style={{display:"flex",alignItems:"center",gap:8,fontWeight:800,color:C.wh,marginBottom:10}}><Logo s={28}/> Batiflow</div><p style={{fontSize:"0.8rem",color:"rgba(255,255,255,0.4)",lineHeight:1.6}}>L'assistant admin des artisans.</p></div>
+        <div><div style={{display:"flex",alignItems:"center",gap:8,fontWeight:800,color:C.wh,marginBottom:10}}><Logo s={28}/> QUOTY</div><p style={{fontSize:"0.8rem",color:"rgba(255,255,255,0.4)",lineHeight:1.6}}>L'assistant admin des artisans.</p></div>
         {[{t:"Produit",l:["Outils","Tarifs","FAQ"]},{t:"Légal",l:["Mentions légales","CGU","Confidentialité"]}].map((c,i)=><div key={i}><div style={{fontWeight:600,fontSize:"0.82rem",color:C.wh,marginBottom:8}}>{c.t}</div>{c.l.map((l,j)=><button key={j} onClick={()=>{if(["Mentions légales","CGU","Confidentialité"].includes(l))onLegal(l)}} style={{display:"block",fontSize:"0.78rem",color:"rgba(255,255,255,0.4)",padding:"3px 0",cursor:"pointer",border:"none",background:"none",fontFamily:"inherit",textAlign:"left"}}>{l}</button>)}</div>)}
       </div>
-      <div style={{maxWidth:1200,margin:"0 auto",borderTop:"1px solid rgba(255,255,255,0.06)",paddingTop:16,marginTop:24,fontSize:"0.72rem",color:"rgba(255,255,255,0.3)",textAlign:"center"}}>© 2025 Batiflow · Fait avec ❤️ pour les artisans</div>
+      <div style={{maxWidth:1200,margin:"0 auto",borderTop:"1px solid rgba(255,255,255,0.06)",paddingTop:16,marginTop:24,fontSize:"0.72rem",color:"rgba(255,255,255,0.3)",textAlign:"center"}}>© 2025 QUOTY · Fait avec ❤️ pour les artisans</div>
     </footer>
   </div>;
 }
 
 // ===================== LEGAL =====================
 function Legal({title,onBack}){
-  const content={"Mentions légales":[["Éditeur","Batiflow SAS — [Votre adresse] — SIRET: [Votre SIRET] — contact@batiflow.fr"],["Hébergement","Vercel Inc."],["Propriété intellectuelle","Tout le contenu est protégé par le droit d'auteur."],["RGPD","Droit d'accès, rectification, suppression: dpo@batiflow.fr"]],"CGU":[["Objet","Utilisation de Batiflow, service SaaS pour artisans."],["Inscription","Informations exactes requises."],["Abonnement","Mensuel, renouvelable. Paiement via Stripe."],["Essai","14 jours gratuits sans CB."],["Résiliation","En un clic, fin de période."],["Responsabilité","Outil d'aide, vérification par l'utilisateur."],["Données","Hébergées en France, RGPD."]],"Confidentialité":[["Données collectées","Nom, email, téléphone, SIRET, adresse."],["Usage","Fonctionnement du service uniquement."],["Sécurité","Chiffrement, hébergement France."],["Vos droits","Accès, rectification, suppression: dpo@batiflow.fr"]]};
+  const content={"Mentions légales":[["Éditeur","QUOTY SAS — [Votre adresse] — SIRET: [Votre SIRET] — contact@quoty.fr"],["Hébergement","Vercel Inc."],["Propriété intellectuelle","Tout le contenu est protégé par le droit d'auteur."],["RGPD","Droit d'accès, rectification, suppression: dpo@quoty.fr"]],"CGU":[["Objet","Utilisation de QUOTY, service SaaS pour artisans."],["Inscription","Informations exactes requises."],["Abonnement","Mensuel, renouvelable. Paiement via Stripe."],["Essai","14 jours gratuits sans CB."],["Résiliation","En un clic, fin de période."],["Responsabilité","Outil d'aide, vérification par l'utilisateur."],["Données","Hébergées en France, RGPD."]],"Confidentialité":[["Données collectées","Nom, email, téléphone, SIRET, adresse."],["Usage","Fonctionnement du service uniquement."],["Sécurité","Chiffrement, hébergement France."],["Vos droits","Accès, rectification, suppression: dpo@quoty.fr"]]};
   return <div style={{minHeight:"100vh",background:C.w50}}>
     <nav style={{display:"flex",alignItems:"center",gap:12,padding:"14px 24px",borderBottom:`1px solid ${C.g100}`,background:C.wh}}>
       <button onClick={onBack} style={{...bs,...bsm}}>← Retour</button>
-      <div style={{display:"flex",alignItems:"center",gap:8,fontWeight:800,color:C.g800}}><Logo s={28}/> Batiflow</div>
+      <div style={{display:"flex",alignItems:"center",gap:8,fontWeight:800,color:C.g800}}><Logo s={28}/> QUOTY</div>
     </nav>
     <div style={{maxWidth:700,margin:"0 auto",padding:"40px 20px"}}>
       <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.8rem",color:C.g900,marginBottom:24}}>{title}</h1>
@@ -205,12 +205,12 @@ function Auth({onAuth,onBack,mode:initMode="signup"}){
   return <div style={{minHeight:"100vh",display:"flex",flexDirection:mob?"column":"row",background:`linear-gradient(135deg,${C.g900},${C.g800})`}}>
     {!mob&&<div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"48px 52px",color:C.wh,maxWidth:460}}>
       <button onClick={onBack} style={{color:"rgba(255,255,255,0.5)",border:"none",background:"none",cursor:"pointer",fontFamily:"inherit",fontSize:"0.82rem",marginBottom:28,padding:0,textAlign:"left"}}>← Retour</button>
-      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:32}}><Logo s={36}/><span style={{fontSize:"1.4rem",fontWeight:800}}>Batiflow</span></div>
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:32}}><Logo s={36}/><span style={{fontSize:"1.4rem",fontWeight:800}}>QUOTY</span></div>
       <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"2.2rem",lineHeight:1.15}}>Votre admin en <span style={{color:C.g400}}>pilote auto</span></h1>
     </div>}
     <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
       <div style={{...crd,maxWidth:380,width:"100%",padding:28}}>
-        {mob&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}><Logo s={28}/><span style={{fontWeight:800,color:C.g800}}>Batiflow</span><button onClick={onBack} style={{marginLeft:"auto",color:C.x500,border:"none",background:"none",cursor:"pointer",fontFamily:"inherit",fontSize:"0.82rem"}}>← Retour</button></div>}
+        {mob&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}><Logo s={28}/><span style={{fontWeight:800,color:C.g800}}>QUOTY</span><button onClick={onBack} style={{marginLeft:"auto",color:C.x500,border:"none",background:"none",cursor:"pointer",fontFamily:"inherit",fontSize:"0.82rem"}}>← Retour</button></div>}
         <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.3rem",color:C.g900,marginBottom:4}}>{mode==="login"?"Connexion":"Créer un compte"}</h2>
         <p style={{fontSize:"0.85rem",color:C.x500,marginBottom:20}}>{mode==="login"?"Accédez à votre espace":"14 jours gratuits, sans CB"}</p>
         <div style={{display:"flex",flexDirection:"column",gap:12}}>
@@ -236,7 +236,7 @@ function Onboard({onDone}){
   return <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${C.g50},${C.w50})`,padding:16}}>
     <div style={{...crd,maxWidth:540,width:"100%",padding:mob?20:32}}>
       <div style={{textAlign:"center",marginBottom:20}}>
-        <div style={{display:"flex",alignItems:"center",gap:8,justifyContent:"center",marginBottom:8}}><Logo s={28}/><span style={{fontWeight:800,fontSize:"1.2rem",color:C.g800}}>Batiflow</span></div>
+        <div style={{display:"flex",alignItems:"center",gap:8,justifyContent:"center",marginBottom:8}}><Logo s={28}/><span style={{fontWeight:800,fontSize:"1.2rem",color:C.g800}}>QUOTY</span></div>
         <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.3rem",color:C.g900}}>Configuration — Étape {step}/2</h2>
         <div style={{display:"flex",gap:6,justifyContent:"center",marginTop:8}}><div style={{width:60,height:4,borderRadius:4,background:C.g500}}/><div style={{width:60,height:4,borderRadius:4,background:step>=2?C.g500:C.x100}}/></div>
       </div>
@@ -266,7 +266,7 @@ function Onboard({onDone}){
         <div style={{display:"flex",gap:8}}><button style={{...bs,flex:1,justifyContent:"center"}} onClick={()=>setStep(1)}>← Retour</button><button style={{...bp,flex:2,justifyContent:"center"}} onClick={async()=>{
           const{data:{user}}=await supabase.auth.getUser();
           if(user){await supabase.from("profiles").upsert({id:user.id,email:user.email,entreprise:f.entreprise,siret:f.siret,adresse:f.adresse,code_postal:f.cp,ville:f.ville,telephone:f.telephone,metier:f.metier,assurance:f.assurance,tva_rate:parseFloat(f.tvaRate||"10")})}
-          toast("Bienvenue sur Batiflow !");onDone({...f,logo})}}>C'est parti →</button></div>
+          toast("Bienvenue sur QUOTY !");onDone({...f,logo})}}>C'est parti →</button></div>
       </div>}
     </div>
   </div>;
@@ -324,7 +324,7 @@ function Dash({art,setArt,onOut,email,uid}){
 
   if(mob) return <div>
     <div style={{position:"fixed",top:0,left:0,right:0,zIndex:50,background:C.g900,padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-      <div style={{display:"flex",alignItems:"center",gap:8}}><Logo s={26}/><span style={{fontWeight:800,color:C.wh,fontSize:"1rem"}}>Batiflow</span></div>
+      <div style={{display:"flex",alignItems:"center",gap:8}}><Logo s={26}/><span style={{fontWeight:800,color:C.wh,fontSize:"1rem"}}>QUOTY</span></div>
       <button onClick={()=>setNav(!nav)} style={{border:"none",background:"none",color:C.wh,cursor:"pointer",fontSize:"1.3rem"}}>{nav?"✕":"☰"}</button>
     </div>
     {nav&&sidebar}
@@ -477,7 +477,7 @@ function EditD({doc,mob,onSave,onX}){const[ls,setLs]=useState(doc.lignes?.map(l=
 function FList({facs,onV}){const[q,setQ]=useState("");const[fil,setFil]=useState("all");
   const isRetard=(f)=>{if(f.status==="Payee")return false;if(!f.echeance)return false;const parts=f.echeance.split("/");const ech=new Date(parts[2],parts[1]-1,parts[0]);return new Date()>ech};
   const ff=facs.filter(f=>{const mq=!q||f.clientNom.toLowerCase().includes(q.toLowerCase());const mf=fil==="all"||(fil==="retard"?isRetard(f):f.status===fil);return mq&&mf});
-  return <div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}}><h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",color:C.g900}}>Factures</h1>{facs.length>0&&<button style={{...bs,...bsm}} onClick={()=>{const rows=[["Numero","Date","Client","HT","TVA","TTC","Statut","Echeance"]];facs.forEach(f=>rows.push([f.num,f.date,f.clientNom,f.totalHT,f.tva,f.totalTTC,f.status,f.echeance||""]));const csv=rows.map(r=>r.join(";")).join("\n");const blob=new Blob([csv],{type:"text/csv"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="factures-batiflow.csv";a.click()}}>📊 Export CSV</button>}</div>
+  return <div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}}><h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",color:C.g900}}>Factures</h1>{facs.length>0&&<button style={{...bs,...bsm}} onClick={()=>{const rows=[["Numero","Date","Client","HT","TVA","TTC","Statut","Echeance"]];facs.forEach(f=>rows.push([f.num,f.date,f.clientNom,f.totalHT,f.tva,f.totalTTC,f.status,f.echeance||""]));const csv=rows.map(r=>r.join(";")).join("\n");const blob=new Blob([csv],{type:"text/csv"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="factures-quoty.csv";a.click()}}>📊 Export CSV</button>}</div>
     {facs.length>0&&<div style={{display:"flex",gap:10,marginBottom:12,flexWrap:"wrap",alignItems:"center"}}><SearchBar value={q} onChange={setQ} placeholder="Rechercher..."/><div style={{display:"flex",gap:4}}>{[{v:"all",l:"Toutes"},{v:"Emise",l:"En attente"},{v:"retard",l:"En retard"},{v:"Payee",l:"Encaissees"}].map(o=><button key={o.v} onClick={()=>setFil(o.v)} style={{padding:"5px 12px",borderRadius:50,fontSize:"0.75rem",fontWeight:600,border:`1.5px solid ${fil===o.v?C.g500:C.x100}`,background:fil===o.v?C.g100:C.wh,color:fil===o.v?C.g700:C.x500,cursor:"pointer",fontFamily:"inherit"}}>{o.l}</button>)}</div></div>}
     {ff.length===0?<div style={{...crd,textAlign:"center",padding:"32px 0"}}><p style={{color:C.x500}}>{facs.length===0?"Convertissez un devis en facture":"Aucun resultat"}</p></div>
     :<div style={crd}>{ff.map((f,i)=><div key={i} onClick={()=>onV(f)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 0",borderBottom:i<ff.length-1?`1px solid ${C.x100}`:"none",cursor:"pointer"}}><div><div style={{fontWeight:600,fontSize:"0.84rem"}}>{f.num} — {f.clientNom}</div><div style={{fontSize:"0.72rem",color:C.x500}}>{f.date}{f.echeance&&" — Ech. "+f.echeance}{isRetard(f)&&<span style={{color:C.r500,fontWeight:600}}> EN RETARD</span>}</div></div><div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontWeight:700,color:C.g800,fontSize:"0.85rem"}}>{f.totalTTC}</span><SBadge s={f.status}/></div></div>)}</div>}
@@ -646,7 +646,7 @@ function SubV({mob}){const toast=useT();
       <div style={{display:"flex",flexDirection:"column",gap:12}}>
         <div style={crd}>
           <h3 style={{fontWeight:700,color:C.g900,fontSize:"0.95rem",marginBottom:8}}>Pourquoi 29 EUR/mois ?</h3>
-          <p style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.6}}>Vous perdez en moyenne 5h par semaine sur vos devis et factures. A 40 EUR/h, ca fait 800 EUR/mois. Batiflow vous en fait gagner au moins la moitie pour moins de 1 EUR par jour.</p>
+          <p style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.6}}>Vous perdez en moyenne 5h par semaine sur vos devis et factures. A 40 EUR/h, ca fait 800 EUR/mois. QUOTY vous en fait gagner au moins la moitie pour moins de 1 EUR par jour.</p>
         </div>
         <div style={crd}>
           <h3 style={{fontWeight:700,color:C.g900,fontSize:"0.95rem",marginBottom:8}}>Sans engagement</h3>
@@ -654,7 +654,7 @@ function SubV({mob}){const toast=useT();
         </div>
         <div style={crd}>
           <h3 style={{fontWeight:700,color:C.g900,fontSize:"0.95rem",marginBottom:8}}>Une question ?</h3>
-          <p style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.6}}>Ecrivez-nous a support@batiflow.fr</p>
+          <p style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.6}}>Ecrivez-nous a support@quoty.fr</p>
         </div>
       </div>
     </div>
