@@ -40,7 +40,7 @@ const SearchBar=({value,onChange,placeholder})=><input style={{...inp,maxWidth:3
 function Landing({onStart,onLogin,onLegal}){
   const mob=useMobile();const[faq,setFaq]=useState(null);const[menu,setMenu]=useState(false);
   const features=[{i:"📝",t:"Devis IA en 10 secondes",d:"Decrivez le chantier en 2 lignes. L'IA genere un devis complet avec fournitures, main d'oeuvre et prix du marche."},{i:"🧾",t:"Factures conformes en 1 clic",d:"Devis accepte ? Un clic et la facture est prete avec toutes les mentions legales obligatoires."},{i:"🔔",t:"Relances automatiques",d:"Plus de devis oublies. QUOTY relance vos clients au bon moment par email."},{i:"📊",t:"Marges en temps reel",d:"Sachez exactement combien vous gagnez sur chaque chantier. Fini les mauvaises surprises."},{i:"👥",t:"Fichier clients organise",d:"Tous vos clients, historique des devis et factures. Retrouvez tout en 2 secondes."},{i:"📱",t:"Fonctionne sur telephone",d:"Sur le chantier ? Creez un devis depuis votre telephone et envoyez-le sur place."}];
-  const plans=[{n:"Starter",p:"14,99",f:["Devis illimités","PDF personnalisés","Envoi email","Support"]},{n:"Pro",p:"34,99",pop:true,f:["Tout Starter","Factures","Relances auto","Marges","Dashboard","Support prio"]},{n:"Entreprise",p:"49,99",f:["Tout Pro","Suivi chantier","Contrats","5 utilisateurs","Accompagnement"]}];
+  const plans=[];
   const faqs=[{q:"Adapté à mon métier ?",a:"Oui ! Plombiers, électriciens, peintres, carreleurs…"},{q:"Pas doué en informatique ?",a:"Si vous savez envoyer un SMS, c'est bon. Support en 24h."},{q:"Devis conformes ?",a:"Mentions légales incluses : SIRET, assurance, TVA."},{q:"Annulation ?",a:"Sans engagement. Résiliation en un clic."},{q:"Comment ça marche ?",a:"Décrivez le chantier, l'IA génère les lignes + prix. Vous ajustez."},{q:"Données sécurisées ?",a:"Hébergées en France, chiffrées, RGPD."}];
   const scr=id=>{const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth"})};
 
@@ -125,17 +125,27 @@ function Landing({onStart,onLogin,onLegal}){
 
     {/* PRICING */}
     <section id="tarifs" style={{background:C.w50,padding:mob?"48px 16px":"80px 32px",textAlign:"center"}}><div style={{maxWidth:1200,margin:"0 auto"}}>
-      <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:mob?"1.8rem":"2.4rem",color:C.g900,marginBottom:32}}>Un prix honnête</h2>
-      <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"repeat(3,1fr)",gap:16,alignItems:"start"}}>
-        {plans.map((p,i)=><div key={i} style={{borderRadius:20,padding:28,border:`2px solid ${p.pop?C.g500:C.x100}`,background:p.pop?C.g900:C.wh,color:p.pop?C.wh:C.x900,position:"relative"}}>
-          {p.pop&&<div style={{position:"absolute",top:-12,left:"50%",transform:"translateX(-50%)",background:C.g500,color:C.wh,fontSize:"0.7rem",fontWeight:700,padding:"4px 14px",borderRadius:50}}>⭐ Le plus choisi</div>}
-          <div style={{fontWeight:600,color:p.pop?C.g300:C.x900,marginBottom:4}}>{p.n}</div>
-          <div style={{display:"flex",alignItems:"baseline",gap:3,justifyContent:"center",marginBottom:16}}><span style={{fontSize:"2.2rem",fontWeight:800,fontFamily:"'Playfair Display',Georgia,serif",color:p.pop?C.wh:C.g800}}>{p.p}</span><span style={{fontSize:"0.85rem",color:p.pop?"rgba(255,255,255,0.5)":C.x500}}>€/mois</span></div>
-          <div style={{textAlign:"left"}}>{p.f.map((f,j)=><div key={j} style={{display:"flex",alignItems:"center",gap:8,fontSize:"0.84rem",color:p.pop?"rgba(255,255,255,0.8)":C.x700,padding:"4px 0"}}><Chk/>{f}</div>)}</div>
-          <button onClick={onStart} style={{...bp,width:"100%",justifyContent:"center",marginTop:16,...(p.pop?{background:C.g400,color:C.g900}:{})}}>{p.pop?"Essai 14j gratuit →":"Commencer"}</button>
-        </div>)}
+      <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:mob?"1.8rem":"2.4rem",color:C.g900,marginBottom:12}}>Un prix simple</h2>
+      <p style={{color:C.x500,marginBottom:32,fontSize:"1rem"}}>Tout inclus, sans surprise.</p>
+      <div style={{maxWidth:420,margin:"0 auto",borderRadius:20,padding:32,border:`2px solid ${C.g500}`,background:C.g900,color:C.wh,position:"relative"}}>
+        <div style={{position:"absolute",top:-12,left:"50%",transform:"translateX(-50%)",background:C.g500,color:C.wh,fontSize:"0.7rem",fontWeight:700,padding:"4px 14px",borderRadius:50}}>Plan unique</div>
+        <div style={{display:"flex",alignItems:"baseline",gap:3,justifyContent:"center",marginBottom:4}}><span style={{fontSize:"2.8rem",fontWeight:800,fontFamily:"'Playfair Display',Georgia,serif"}}>29</span><span style={{fontSize:"1rem",color:"rgba(255,255,255,0.5)"}}>EUR/mois</span></div>
+        <div style={{textAlign:"center",fontSize:"0.85rem",color:C.g300,marginBottom:20}}>ou 249EUR/an (2 mois offerts)</div>
+        <div style={{textAlign:"left"}}>{["Devis illimites generes par IA","Factures en 1 clic","Signature electronique","Envoi email + acceptation en ligne","Relance automatique","Suivi de paiement","Dossier client complet","Carnet de chantier","Dashboard rentabilite","Export comptable CSV","PDF professionnel","100% conforme legalement"].map((f,j)=><div key={j} style={{display:"flex",alignItems:"center",gap:8,fontSize:"0.84rem",color:"rgba(255,255,255,0.8)",padding:"4px 0"}}><Chk/>{f}</div>)}</div>
+        <button onClick={onStart} style={{...bp,width:"100%",justifyContent:"center",marginTop:20,background:C.g400,color:C.g900}}>Essai 14 jours gratuit</button>
+        <div style={{textAlign:"center",fontSize:"0.78rem",color:"rgba(255,255,255,0.4)",marginTop:8}}>Sans engagement - Sans carte bancaire</div>
       </div>
-    </div></section>
+
+
+
+
+
+
+
+
+
+
+
 
     {/* FAQ */}
     <section id="faq" style={{background:C.wh,padding:mob?"48px 16px":"80px 32px"}}><div style={{maxWidth:700,margin:"0 auto"}}>
@@ -162,14 +172,14 @@ function Landing({onStart,onLogin,onLegal}){
         <div><div style={{display:"flex",alignItems:"center",gap:8,fontWeight:800,color:C.wh,marginBottom:10}}><Logo s={28}/> QUOTY</div><p style={{fontSize:"0.8rem",color:"rgba(255,255,255,0.4)",lineHeight:1.6}}>L'assistant admin des artisans.</p></div>
         {[{t:"Produit",l:["Outils","Tarifs","FAQ"]},{t:"Légal",l:["Mentions légales","CGU","Confidentialité"]}].map((c,i)=><div key={i}><div style={{fontWeight:600,fontSize:"0.82rem",color:C.wh,marginBottom:8}}>{c.t}</div>{c.l.map((l,j)=><button key={j} onClick={()=>{if(["Mentions légales","CGU","Confidentialité"].includes(l))onLegal(l)}} style={{display:"block",fontSize:"0.78rem",color:"rgba(255,255,255,0.4)",padding:"3px 0",cursor:"pointer",border:"none",background:"none",fontFamily:"inherit",textAlign:"left"}}>{l}</button>)}</div>)}
       </div>
-      <div style={{maxWidth:1200,margin:"0 auto",borderTop:"1px solid rgba(255,255,255,0.06)",paddingTop:16,marginTop:24,fontSize:"0.72rem",color:"rgba(255,255,255,0.3)",textAlign:"center"}}>© 2025 QUOTY · Fait avec ❤️ pour les artisans</div>
+      <div style={{maxWidth:1200,margin:"0 auto",borderTop:"1px solid rgba(255,255,255,0.06)",paddingTop:16,marginTop:24,fontSize:"0.72rem",color:"rgba(255,255,255,0.3)",textAlign:"center"}}>© 2026 QUOTY · Fait avec ❤️ pour les artisans</div>
     </footer>
   </div>;
 }
 
 // ===================== LEGAL =====================
 function Legal({title,onBack}){
-  const content={"Mentions légales":[["Éditeur","QUOTY SAS — [Votre adresse] — SIRET: [Votre SIRET] — contact@quoty.fr"],["Hébergement","Vercel Inc."],["Propriété intellectuelle","Tout le contenu est protégé par le droit d'auteur."],["RGPD","Droit d'accès, rectification, suppression: dpo@quoty.fr"]],"CGU":[["Objet","Utilisation de QUOTY, service SaaS pour artisans."],["Inscription","Informations exactes requises."],["Abonnement","Mensuel, renouvelable. Paiement via Stripe."],["Essai","14 jours gratuits sans CB."],["Résiliation","En un clic, fin de période."],["Responsabilité","Outil d'aide, vérification par l'utilisateur."],["Données","Hébergées en France, RGPD."]],"Confidentialité":[["Données collectées","Nom, email, téléphone, SIRET, adresse."],["Usage","Fonctionnement du service uniquement."],["Sécurité","Chiffrement, hébergement France."],["Vos droits","Accès, rectification, suppression: dpo@quoty.fr"]]};
+  const content={"Mentions légales":[["Éditeur","QUOTY SAS — [Votre adresse] — SIRET: [Votre SIRET] — contact@quoty.tech"],["Hébergement","Vercel Inc."],["Propriété intellectuelle","Tout le contenu est protégé par le droit d'auteur."],["RGPD","Droit d'accès, rectification, suppression: dpo@quoty.tech"]],"CGU":[["Objet","Utilisation de QUOTY, service SaaS pour artisans."],["Inscription","Informations exactes requises."],["Abonnement","Mensuel, renouvelable. Paiement via Stripe."],["Essai","14 jours gratuits sans CB."],["Résiliation","En un clic, fin de période."],["Responsabilité","Outil d'aide, vérification par l'utilisateur."],["Données","Hébergées en France, RGPD."]],"Confidentialité":[["Données collectées","Nom, email, téléphone, SIRET, adresse."],["Usage","Fonctionnement du service uniquement."],["Sécurité","Chiffrement, hébergement France."],["Vos droits","Accès, rectification, suppression: dpo@quoty.tech"]]};
   return <div style={{minHeight:"100vh",background:C.w50}}>
     <nav style={{display:"flex",alignItems:"center",gap:12,padding:"14px 24px",borderBottom:`1px solid ${C.g100}`,background:C.wh}}>
       <button onClick={onBack} style={{...bs,...bsm}}>← Retour</button>
@@ -654,7 +664,7 @@ function SubV({mob}){const toast=useT();
         </div>
         <div style={crd}>
           <h3 style={{fontWeight:700,color:C.g900,fontSize:"0.95rem",marginBottom:8}}>Une question ?</h3>
-          <p style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.6}}>Ecrivez-nous a support@quoty.fr</p>
+          <p style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.6}}>Ecrivez-nous a support@quoty.tech</p>
         </div>
       </div>
     </div>
