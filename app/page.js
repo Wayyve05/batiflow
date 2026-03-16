@@ -135,17 +135,7 @@ function Landing({onStart,onLogin,onLegal}){
         <button onClick={onStart} style={{...bp,width:"100%",justifyContent:"center",marginTop:20,background:C.g400,color:C.g900}}>Essai 14 jours gratuit</button>
         <div style={{textAlign:"center",fontSize:"0.78rem",color:"rgba(255,255,255,0.4)",marginTop:8}}>Sans engagement - Sans carte bancaire</div>
       </div>
-
-
-
-
-
-
-
-
-
-
-
+    </div></section>
 
     {/* FAQ */}
     <section id="faq" style={{background:C.wh,padding:mob?"48px 16px":"80px 32px"}}><div style={{maxWidth:700,margin:"0 auto"}}>
