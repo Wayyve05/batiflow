@@ -98,16 +98,39 @@ function Landing({onStart,onLogin,onLegal}){
       </div>
     </div></section>
 
-    {/* PAIN */}
-    <section style={{background:C.g900,padding:mob?"48px 16px":"80px 32px"}}><div style={{maxWidth:1200,margin:"0 auto"}}>
-      <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:mob?"1.8rem":"2.4rem",color:C.wh,marginBottom:12}}>Vous perdez du temps et de l'argent</h2>
-      <p style={{color:"rgba(255,255,255,0.5)",marginBottom:32,maxWidth:500}}>Sans QUOTY, voici ce que ca vous coute chaque semaine :</p>
-      <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"repeat(3,1fr)",gap:16}}>
-        {[["5h","Perdues/semaine"],["40%","Devis jamais relancés"],["0","Vision sur vos marges"]].map(([s,t],i)=><div key={i} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:16,padding:24}}>
-          <div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"2rem",fontWeight:700,color:C.g400}}>{s}</div>
-          <div style={{fontWeight:600,color:C.wh,marginTop:4}}>{t}</div>
-        </div>)}
-      </div>
+    {/* ROI CALCULATOR */}
+    <section style={{background:C.g900,padding:mob?"48px 16px":"80px 32px"}}><div style={{maxWidth:800,margin:"0 auto"}}>
+      <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:mob?"1.8rem":"2.4rem",color:C.wh,marginBottom:8,textAlign:"center"}}>Combien vous économisez avec QUOTY</h2>
+      <p style={{color:"rgba(255,255,255,0.5)",marginBottom:32,textAlign:"center"}}>Déplacez les curseurs pour estimer vos gains</p>
+      {(()=>{const[dpm,setDpm]=useState(15);const[tph,setTph]=useState(40);const[mpm,setMpm]=useState(20);
+        const hSaved=Math.round(dpm*mpm/60*0.7);const mSaved=Math.round(hSaved*tph);const ySaved=mSaved*12;const roi=Math.round((ySaved-360)/360*100);
+        const sliderStyle={width:"100%",accentColor:C.g400,cursor:"pointer",height:6};
+        return <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:24}}>
+          <div style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:16,padding:24}}>
+            <div style={{marginBottom:20}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{color:"rgba(255,255,255,0.6)",fontSize:"0.85rem"}}>Devis par mois</span><span style={{color:C.g400,fontWeight:700}}>{dpm}</span></div>
+              <input type="range" min="1" max="50" value={dpm} onChange={e=>setDpm(Number(e.target.value))} style={sliderStyle}/>
+            </div>
+            <div style={{marginBottom:20}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{color:"rgba(255,255,255,0.6)",fontSize:"0.85rem"}}>Votre taux horaire</span><span style={{color:C.g400,fontWeight:700}}>{tph}€/h</span></div>
+              <input type="range" min="20" max="80" step="5" value={tph} onChange={e=>setTph(Number(e.target.value))} style={sliderStyle}/>
+            </div>
+            <div>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{color:"rgba(255,255,255,0.6)",fontSize:"0.85rem"}}>Minutes par devis (sans QUOTY)</span><span style={{color:C.g400,fontWeight:700}}>{mpm} min</span></div>
+              <input type="range" min="10" max="45" step="5" value={mpm} onChange={e=>setMpm(Number(e.target.value))} style={sliderStyle}/>
+            </div>
+          </div>
+          <div style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:16,padding:24,display:"flex",flexDirection:"column",justifyContent:"center",textAlign:"center"}}>
+            <div style={{fontSize:"0.8rem",color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Economies annuelles estimees</div>
+            <div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"2.8rem",fontWeight:800,color:C.g400}}>{ySaved.toLocaleString()}€</div>
+            <div style={{fontSize:"0.85rem",color:"rgba(255,255,255,0.5)",marginTop:4}}>soit {roi}% de ROI</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginTop:20}}>
+              <div style={{background:"rgba(255,255,255,0.05)",borderRadius:10,padding:12}}><div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",fontWeight:700,color:C.wh}}>{hSaved}h</div><div style={{fontSize:"0.72rem",color:"rgba(255,255,255,0.4)"}}>gagnees/mois</div></div>
+              <div style={{background:"rgba(255,255,255,0.05)",borderRadius:10,padding:12}}><div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",fontWeight:700,color:C.wh}}>{mSaved}€</div><div style={{fontSize:"0.72rem",color:"rgba(255,255,255,0.4)"}}>economises/mois</div></div>
+            </div>
+            <div style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.3)",marginTop:12}}>Cout QUOTY : 29,99€/mois · Vous gagnez {mSaved-30}€ net</div>
+          </div>
+        </div>})()}
     </div></section>
 
     {/* FEATURES */}

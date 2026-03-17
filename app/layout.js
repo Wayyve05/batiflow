@@ -1,8 +1,26 @@
 export const metadata = {
-  title: 'QUOTY - Vos devis, générés par l\'IA',
-  description: 'Le premier outil de devis pour artisans avec intelligence artificielle. Décrivez votre chantier, l\'IA génère un devis complet en 30 secondes.',
+  title: 'QUOTY - Devis artisan par IA en 30 secondes | Factures, relances automatiques',
+  description: 'QUOTY génère vos devis artisan par intelligence artificielle en 30 secondes. Factures en 1 clic, signature électronique, relance automatique, suivi de paiement. 14 jours gratuits.',
+  keywords: 'devis artisan, logiciel devis batiment, devis IA, facture artisan, devis plombier, devis electricien, devis peintre, logiciel facturation artisan, devis automatique, generateur devis',
   manifest: '/manifest.json',
   themeColor: '#145A3E',
+  openGraph: {
+    title: 'QUOTY - Vos devis, générés par l\'IA',
+    description: 'Le premier outil de devis pour artisans avec intelligence artificielle. Décrivez votre chantier, l\'IA génère un devis complet en 30 secondes.',
+    url: 'https://quoty.tech',
+    siteName: 'QUOTY',
+    type: 'website',
+    locale: 'fr_FR',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'QUOTY - Devis artisan par IA en 30 secondes',
+    description: 'Décrivez votre chantier en 2 lignes, l\'IA génère un devis complet. Factures, relances auto, signature électronique.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
