@@ -43,7 +43,7 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-title" content="QUOTY" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
-      <body>{children}</body>
+      <body style={{margin:0,padding:0,background:'#145A3E'}}>{children}</body>
     </html>
   )
 }
