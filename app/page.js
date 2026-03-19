@@ -39,7 +39,7 @@ const SearchBar=({value,onChange,placeholder})=><input style={{...inp,maxWidth:3
 // ===================== LANDING =====================
 function Landing({onStart,onLogin,onLegal}){
   const mob=useMobile();const[faq,setFaq]=useState(null);const[menu,setMenu]=useState(false);
-  const features=[{i:"📝",t:"Devis IA en 10 secondes",d:"Decrivez le chantier en 2 lignes. L'IA genere un devis complet avec fournitures, main d'oeuvre et prix du marche."},{i:"🧾",t:"Factures conformes en 1 clic",d:"Devis accepte ? Un clic et la facture est prete avec toutes les mentions legales obligatoires."},{i:"🔔",t:"Relances automatiques",d:"Plus de devis oublies. Invoxa relance vos clients au bon moment par email."},{i:"📊",t:"Marges en temps reel",d:"Sachez exactement combien vous gagnez sur chaque chantier. Fini les mauvaises surprises."},{i:"👥",t:"Fichier clients organise",d:"Tous vos clients, historique des devis et factures. Retrouvez tout en 2 secondes."},{i:"📱",t:"Fonctionne sur telephone",d:"Sur le chantier ? Creez un devis depuis votre telephone et envoyez-le sur place."}];
+  const features=[{i:"📝",t:"Devis IA en 10 secondes",d:"Decrivez le chantier en 2 lignes. L'IA genere un devis complet avec fournitures, main d'oeuvre et prix du marche."},{i:"🧾",t:"Factures conformes en 1 clic",d:"Devis accepte ? Un clic et la facture est prete avec toutes les mentions legales obligatoires."},{i:"🔔",t:"Relances automatiques",d:"Plus de devis oublies. Crafto relance vos clients au bon moment par email."},{i:"📊",t:"Marges en temps reel",d:"Sachez exactement combien vous gagnez sur chaque chantier. Fini les mauvaises surprises."},{i:"👥",t:"Fichier clients organise",d:"Tous vos clients, historique des devis et factures. Retrouvez tout en 2 secondes."},{i:"📱",t:"Fonctionne sur telephone",d:"Sur le chantier ? Creez un devis depuis votre telephone et envoyez-le sur place."}];
   const plans=[];
   const faqs=[{q:"Adapté à mon métier ?",a:"Oui ! Plombiers, électriciens, peintres, carreleurs…"},{q:"Pas doué en informatique ?",a:"Si vous savez envoyer un SMS, c'est bon. Support en 24h."},{q:"Devis conformes ?",a:"Mentions légales incluses : SIRET, assurance, TVA."},{q:"Annulation ?",a:"Sans engagement. Résiliation en un clic."},{q:"Comment ça marche ?",a:"Décrivez le chantier, l'IA génère les lignes + prix. Vous ajustez."},{q:"Données sécurisées ?",a:"Hébergées en France, chiffrées, RGPD."}];
   const scr=id=>{const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth"})};
@@ -48,7 +48,7 @@ function Landing({onStart,onLogin,onLegal}){
     <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     {/* NAV */}
     <nav style={{position:"sticky",top:0,zIndex:100,display:"flex",alignItems:"center",justifyContent:"space-between",padding:mob?"12px 16px":"14px 32px",background:"rgba(255,252,248,0.92)",backdropFilter:"blur(16px)",borderBottom:`1px solid ${C.g100}`}}>
-      <div style={{display:"flex",alignItems:"center",gap:8,fontWeight:800,fontSize:mob?"1.1rem":"1.3rem",color:C.g800}}><Logo s={mob?28:32}/> Invoxa</div>
+      <div style={{display:"flex",alignItems:"center",gap:8,fontWeight:800,fontSize:mob?"1.1rem":"1.3rem",color:C.g800}}><Logo s={mob?28:32}/> Crafto</div>
       {mob?<button onClick={()=>setMenu(!menu)} style={{border:"none",background:"none",cursor:"pointer",fontSize:"1.5rem"}}>{menu?"✕":"☰"}</button>:
       <div style={{display:"flex",alignItems:"center",gap:24}}>
         {["outils","tarifs","faq"].map(s=><button key={s} onClick={()=>scr(s)} style={{fontSize:"0.9rem",fontWeight:500,color:C.x700,cursor:"pointer",border:"none",background:"none",fontFamily:"inherit"}}>{s==="outils"?"Outils":s==="tarifs"?"Tarifs":"FAQ"}</button>)}
@@ -67,7 +67,7 @@ function Landing({onStart,onLogin,onLegal}){
       <div>
         <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"6px 16px",background:C.g100,borderRadius:50,fontSize:"0.82rem",fontWeight:500,color:C.g800,marginBottom:20}}><span style={{width:8,height:8,borderRadius:"50%",background:C.g500,display:"inline-block"}}/>N°1 de la gestion artisan par IA</div>
         <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:mob?"2.2rem":"3.2rem",lineHeight:1.1,color:C.g900,marginBottom:20}}>Vos devis en <em style={{color:C.g600,fontStyle:"normal"}}>10 secondes</em>,<br/>vos factures en 1 clic</h1>
-        <p style={{fontSize:"1.05rem",lineHeight:1.65,color:C.x700,marginBottom:12,maxWidth:480}}>Vous perdez 5h par semaine sur la paperasse ? Invoxa utilise l'IA pour automatiser vos devis, factures et relances.</p>
+        <p style={{fontSize:"1.05rem",lineHeight:1.65,color:C.x700,marginBottom:12,maxWidth:480}}>Vous perdez 5h par semaine sur la paperasse ? Crafto utilise l'IA pour automatiser vos devis, factures et relances.</p>
         <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
           {["Decrivez votre chantier, l'IA genere un devis detaille avec les bons prix","Transformez un devis accepte en facture conforme en 1 clic","Relance automatique des devis non signes"].map((t,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8,fontSize:"0.9rem",color:C.x700}}><Chk/>{t}</div>)}
         </div>
@@ -100,7 +100,7 @@ function Landing({onStart,onLogin,onLegal}){
 
     {/* ROI CALCULATOR */}
     <section style={{background:C.g900,padding:mob?"48px 16px":"80px 32px"}}><div style={{maxWidth:800,margin:"0 auto"}}>
-      <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:mob?"1.8rem":"2.4rem",color:C.wh,marginBottom:8,textAlign:"center"}}>Combien vous économisez avec Invoxa</h2>
+      <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:mob?"1.8rem":"2.4rem",color:C.wh,marginBottom:8,textAlign:"center"}}>Combien vous économisez avec Crafto</h2>
       <p style={{color:"rgba(255,255,255,0.5)",marginBottom:32,textAlign:"center"}}>Déplacez les curseurs pour estimer vos gains</p>
       {(()=>{const[dpm,setDpm]=useState(15);const[tph,setTph]=useState(40);const[mpm,setMpm]=useState(20);
         const hSaved=Math.round(dpm*mpm/60*0.7);const mSaved=Math.round(hSaved*tph);const ySaved=mSaved*12;const roi=Math.round((ySaved-360)/360*100);
@@ -116,7 +116,7 @@ function Landing({onStart,onLogin,onLegal}){
               <input type="range" min="20" max="80" step="5" value={tph} onChange={e=>setTph(Number(e.target.value))} style={sliderStyle}/>
             </div>
             <div>
-              <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{color:"rgba(255,255,255,0.6)",fontSize:"0.85rem"}}>Minutes par devis (sans Invoxa)</span><span style={{color:C.g400,fontWeight:700}}>{mpm} min</span></div>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{color:"rgba(255,255,255,0.6)",fontSize:"0.85rem"}}>Minutes par devis (sans Crafto)</span><span style={{color:C.g400,fontWeight:700}}>{mpm} min</span></div>
               <input type="range" min="10" max="45" step="5" value={mpm} onChange={e=>setMpm(Number(e.target.value))} style={sliderStyle}/>
             </div>
           </div>
@@ -128,7 +128,7 @@ function Landing({onStart,onLogin,onLegal}){
               <div style={{background:"rgba(255,255,255,0.05)",borderRadius:10,padding:12}}><div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",fontWeight:700,color:C.wh}}>{hSaved}h</div><div style={{fontSize:"0.72rem",color:"rgba(255,255,255,0.4)"}}>gagnees/mois</div></div>
               <div style={{background:"rgba(255,255,255,0.05)",borderRadius:10,padding:12}}><div style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",fontWeight:700,color:C.wh}}>{mSaved}€</div><div style={{fontSize:"0.72rem",color:"rgba(255,255,255,0.4)"}}>economises/mois</div></div>
             </div>
-            <div style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.3)",marginTop:12}}>Cout Invoxa : 29,99€/mois · Vous gagnez {mSaved-30}€ net</div>
+            <div style={{fontSize:"0.75rem",color:"rgba(255,255,255,0.3)",marginTop:12}}>Cout Crafto : 29,99€/mois · Vous gagnez {mSaved-30}€ net</div>
           </div>
         </div>})()}
     </div></section>
@@ -182,21 +182,21 @@ function Landing({onStart,onLogin,onLegal}){
     {/* FOOTER */}
     <footer style={{background:C.g900,padding:mob?"32px 16px":"48px 32px"}}>
       <div style={{maxWidth:1200,margin:"0 auto",display:"grid",gridTemplateColumns:mob?"1fr 1fr":"2fr 1fr 1fr 1fr",gap:mob?24:48}}>
-        <div><div style={{display:"flex",alignItems:"center",gap:8,fontWeight:800,color:C.wh,marginBottom:10}}><Logo s={28}/> Invoxa</div><p style={{fontSize:"0.8rem",color:"rgba(255,255,255,0.4)",lineHeight:1.6}}>L'assistant admin des artisans.</p></div>
+        <div><div style={{display:"flex",alignItems:"center",gap:8,fontWeight:800,color:C.wh,marginBottom:10}}><Logo s={28}/> Crafto</div><p style={{fontSize:"0.8rem",color:"rgba(255,255,255,0.4)",lineHeight:1.6}}>L'assistant admin des artisans.</p></div>
         {[{t:"Produit",l:["Outils","Tarifs","FAQ"]},{t:"Légal",l:["Mentions légales","CGU","Confidentialité"]}].map((c,i)=><div key={i}><div style={{fontWeight:600,fontSize:"0.82rem",color:C.wh,marginBottom:8}}>{c.t}</div>{c.l.map((l,j)=><button key={j} onClick={()=>{if(["Mentions légales","CGU","Confidentialité"].includes(l))onLegal(l)}} style={{display:"block",fontSize:"0.78rem",color:"rgba(255,255,255,0.4)",padding:"3px 0",cursor:"pointer",border:"none",background:"none",fontFamily:"inherit",textAlign:"left"}}>{l}</button>)}</div>)}
       </div>
-      <div style={{maxWidth:1200,margin:"0 auto",borderTop:"1px solid rgba(255,255,255,0.06)",paddingTop:16,marginTop:24,fontSize:"0.72rem",color:"rgba(255,255,255,0.3)",textAlign:"center"}}>© 2026 Invoxa · Fait avec ❤️ pour les artisans</div>
+      <div style={{maxWidth:1200,margin:"0 auto",borderTop:"1px solid rgba(255,255,255,0.06)",paddingTop:16,marginTop:24,fontSize:"0.72rem",color:"rgba(255,255,255,0.3)",textAlign:"center"}}>© 2026 Crafto · Fait avec ❤️ pour les artisans</div>
     </footer>
   </div>;
 }
 
 // ===================== LEGAL =====================
 function Legal({title,onBack}){
-  const content={"Mentions légales":[["Éditeur","Invoxa SAS — [Votre adresse] — SIRET: [Votre SIRET] — contact@invoxa.tech"],["Hébergement","Vercel Inc."],["Propriété intellectuelle","Tout le contenu est protégé par le droit d'auteur."],["RGPD","Droit d'accès, rectification, suppression: dpo@invoxa.tech"]],"CGU":[["Objet","Utilisation de Invoxa, service SaaS pour artisans."],["Inscription","Informations exactes requises."],["Abonnement","Mensuel, renouvelable. Paiement via Stripe."],["Essai","14 jours gratuits sans CB."],["Résiliation","En un clic, fin de période."],["Responsabilité","Outil d'aide, vérification par l'utilisateur."],["Données","Hébergées en France, RGPD."]],"Confidentialité":[["Données collectées","Nom, email, téléphone, SIRET, adresse."],["Usage","Fonctionnement du service uniquement."],["Sécurité","Chiffrement, hébergement France."],["Vos droits","Accès, rectification, suppression: dpo@invoxa.tech"]]};
+  const content={"Mentions légales":[["Éditeur","Crafto SAS — [Votre adresse] — SIRET: [Votre SIRET] — contact@crafto.tech"],["Hébergement","Vercel Inc."],["Propriété intellectuelle","Tout le contenu est protégé par le droit d'auteur."],["RGPD","Droit d'accès, rectification, suppression: dpo@crafto.tech"]],"CGU":[["Objet","Utilisation de Crafto, service SaaS pour artisans."],["Inscription","Informations exactes requises."],["Abonnement","Mensuel, renouvelable. Paiement via Stripe."],["Essai","14 jours gratuits sans CB."],["Résiliation","En un clic, fin de période."],["Responsabilité","Outil d'aide, vérification par l'utilisateur."],["Données","Hébergées en France, RGPD."]],"Confidentialité":[["Données collectées","Nom, email, téléphone, SIRET, adresse."],["Usage","Fonctionnement du service uniquement."],["Sécurité","Chiffrement, hébergement France."],["Vos droits","Accès, rectification, suppression: dpo@crafto.tech"]]};
   return <div style={{minHeight:"100vh",background:C.w50}}>
     <nav style={{display:"flex",alignItems:"center",gap:12,padding:"14px 24px",borderBottom:`1px solid ${C.g100}`,background:C.wh}}>
       <button onClick={onBack} style={{...bs,...bsm}}>← Retour</button>
-      <div style={{display:"flex",alignItems:"center",gap:8,fontWeight:800,color:C.g800}}><Logo s={28}/> Invoxa</div>
+      <div style={{display:"flex",alignItems:"center",gap:8,fontWeight:800,color:C.g800}}><Logo s={28}/> Crafto</div>
     </nav>
     <div style={{maxWidth:700,margin:"0 auto",padding:"40px 20px"}}>
       <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.8rem",color:C.g900,marginBottom:24}}>{title}</h1>
@@ -228,12 +228,12 @@ function Auth({onAuth,onBack,mode:initMode="signup"}){
   return <div style={{minHeight:"100vh",display:"flex",flexDirection:mob?"column":"row",background:`linear-gradient(135deg,${C.g900},${C.g800})`}}>
     {!mob&&<div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"48px 52px",color:C.wh,maxWidth:460}}>
       <button onClick={onBack} style={{color:"rgba(255,255,255,0.5)",border:"none",background:"none",cursor:"pointer",fontFamily:"inherit",fontSize:"0.82rem",marginBottom:28,padding:0,textAlign:"left"}}>← Retour</button>
-      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:32}}><Logo s={36}/><span style={{fontSize:"1.4rem",fontWeight:800}}>Invoxa</span></div>
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:32}}><Logo s={36}/><span style={{fontSize:"1.4rem",fontWeight:800}}>Crafto</span></div>
       <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"2.2rem",lineHeight:1.15}}>Votre admin en <span style={{color:C.g400}}>pilote auto</span></h1>
     </div>}
     <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
       <div style={{...crd,maxWidth:380,width:"100%",padding:28}}>
-        {mob&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}><Logo s={28}/><span style={{fontWeight:800,color:C.g800}}>Invoxa</span><button onClick={onBack} style={{marginLeft:"auto",color:C.x500,border:"none",background:"none",cursor:"pointer",fontFamily:"inherit",fontSize:"0.82rem"}}>← Retour</button></div>}
+        {mob&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}><Logo s={28}/><span style={{fontWeight:800,color:C.g800}}>Crafto</span><button onClick={onBack} style={{marginLeft:"auto",color:C.x500,border:"none",background:"none",cursor:"pointer",fontFamily:"inherit",fontSize:"0.82rem"}}>← Retour</button></div>}
         <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.3rem",color:C.g900,marginBottom:4}}>{mode==="login"?"Connexion":"Créer un compte"}</h2>
         <p style={{fontSize:"0.85rem",color:C.x500,marginBottom:20}}>{mode==="login"?"Accédez à votre espace":"14 jours gratuits, sans CB"}</p>
         <div style={{display:"flex",flexDirection:"column",gap:12}}>
@@ -259,7 +259,7 @@ function Onboard({onDone}){
   return <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${C.g50},${C.w50})`,padding:16}}>
     <div style={{...crd,maxWidth:540,width:"100%",padding:mob?20:32}}>
       <div style={{textAlign:"center",marginBottom:20}}>
-        <div style={{display:"flex",alignItems:"center",gap:8,justifyContent:"center",marginBottom:8}}><Logo s={28}/><span style={{fontWeight:800,fontSize:"1.2rem",color:C.g800}}>Invoxa</span></div>
+        <div style={{display:"flex",alignItems:"center",gap:8,justifyContent:"center",marginBottom:8}}><Logo s={28}/><span style={{fontWeight:800,fontSize:"1.2rem",color:C.g800}}>Crafto</span></div>
         <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.3rem",color:C.g900}}>Configuration — Étape {step}/2</h2>
         <div style={{display:"flex",gap:6,justifyContent:"center",marginTop:8}}><div style={{width:60,height:4,borderRadius:4,background:C.g500}}/><div style={{width:60,height:4,borderRadius:4,background:step>=2?C.g500:C.x100}}/></div>
       </div>
@@ -289,7 +289,7 @@ function Onboard({onDone}){
         <div style={{display:"flex",gap:8}}><button style={{...bs,flex:1,justifyContent:"center"}} onClick={()=>setStep(1)}>← Retour</button><button style={{...bp,flex:2,justifyContent:"center"}} onClick={async()=>{
           const{data:{user}}=await supabase.auth.getUser();
           if(user){await supabase.from("profiles").upsert({id:user.id,email:user.email,entreprise:f.entreprise,siret:f.siret,adresse:f.adresse,code_postal:f.cp,ville:f.ville,telephone:f.telephone,metier:f.metier,assurance:f.assurance,tva_rate:parseFloat(f.tvaRate||"10")})}
-          toast("Bienvenue sur Invoxa !");onDone({...f,logo})}}>C'est parti →</button></div>
+          toast("Bienvenue sur Crafto !");onDone({...f,logo})}}>C'est parti →</button></div>
       </div>}
     </div>
   </div>;
@@ -332,7 +332,7 @@ function Dash({art,setArt,onOut,email,uid}){
     </div>
   </div>;
 
-  if(isTrialExpired&&!isPro){const[ld,setLd]=useState(false);const checkout=async()=>{setLd(true);try{const r=await fetch("/api/stripe-checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userId:uid,email})});const d=await r.json();if(d.url)window.location.href=d.url}catch(e){}setLd(false)};return <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${C.g900},${C.g800})`,padding:24}}><div style={{...crd,maxWidth:440,textAlign:"center",padding:36}}><div style={{fontSize:"3rem",marginBottom:16}}>⏰</div><h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.5rem",color:C.g900,marginBottom:8}}>Votre essai est termine</h2><p style={{color:C.x500,marginBottom:24,lineHeight:1.6}}>Passez a Invoxa Pro pour continuer a generer vos devis par IA, envoyer vos factures et gerer vos clients.</p><div style={{fontSize:"2rem",fontWeight:800,color:C.g800,fontFamily:"'Playfair Display',Georgia,serif",marginBottom:4}}>29,99€ <span style={{fontSize:"0.9rem",fontWeight:400,color:C.x500}}>/mois</span></div><div style={{fontSize:"0.85rem",color:C.x500,marginBottom:20}}>ou 299,99€/an (2 mois offerts)</div><button style={{...bp,width:"100%",justifyContent:"center",padding:"14px 24px",opacity:ld?0.6:1}} onClick={checkout} disabled={ld}>{ld?"Redirection...":"Passer a Invoxa Pro →"}</button><div style={{fontSize:"0.78rem",color:C.x500,marginTop:8}}>Sans engagement · Annulez quand vous voulez</div><button onClick={onOut} style={{marginTop:16,color:C.x500,border:"none",background:"none",cursor:"pointer",fontFamily:"inherit",fontSize:"0.82rem"}}>Se deconnecter</button></div></div>}
+  if(isTrialExpired&&!isPro){const[ld,setLd]=useState(false);const checkout=async()=>{setLd(true);try{const r=await fetch("/api/stripe-checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userId:uid,email})});const d=await r.json();if(d.url)window.location.href=d.url}catch(e){}setLd(false)};return <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${C.g900},${C.g800})`,padding:24}}><div style={{...crd,maxWidth:440,textAlign:"center",padding:36}}><div style={{fontSize:"3rem",marginBottom:16}}>⏰</div><h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.5rem",color:C.g900,marginBottom:8}}>Votre essai est termine</h2><p style={{color:C.x500,marginBottom:24,lineHeight:1.6}}>Passez a Crafto Pro pour continuer a generer vos devis par IA, envoyer vos factures et gerer vos clients.</p><div style={{fontSize:"2rem",fontWeight:800,color:C.g800,fontFamily:"'Playfair Display',Georgia,serif",marginBottom:4}}>29,99€ <span style={{fontSize:"0.9rem",fontWeight:400,color:C.x500}}>/mois</span></div><div style={{fontSize:"0.85rem",color:C.x500,marginBottom:20}}>ou 299,99€/an (2 mois offerts)</div><button style={{...bp,width:"100%",justifyContent:"center",padding:"14px 24px",opacity:ld?0.6:1}} onClick={checkout} disabled={ld}>{ld?"Redirection...":"Passer a Crafto Pro →"}</button><div style={{fontSize:"0.78rem",color:C.x500,marginTop:8}}>Sans engagement · Annulez quand vous voulez</div><button onClick={onOut} style={{marginTop:16,color:C.x500,border:"none",background:"none",cursor:"pointer",fontFamily:"inherit",fontSize:"0.82rem"}}>Se deconnecter</button></div></div>}
 
   const main=<main style={{padding:mob?16:24,background:C.x100,overflowY:"auto",paddingTop:mob?60:24,minHeight:"100vh"}}>
     {v==="home"&&<HView d={devis} f={facs} a={art} go={go} onNew={()=>go("new-devis")} onVD={d=>{setCur(d);setV("view-d")}} mob={mob}/>}
@@ -351,7 +351,7 @@ function Dash({art,setArt,onOut,email,uid}){
 
   if(mob) return <div>
     <div style={{position:"fixed",top:0,left:0,right:0,zIndex:50,background:C.g900,padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-      <div style={{display:"flex",alignItems:"center",gap:8}}><Logo s={26}/><span style={{fontWeight:800,color:C.wh,fontSize:"1rem"}}>Invoxa</span></div>
+      <div style={{display:"flex",alignItems:"center",gap:8}}><Logo s={26}/><span style={{fontWeight:800,color:C.wh,fontSize:"1rem"}}>Crafto</span></div>
       <button onClick={()=>setNav(!nav)} style={{border:"none",background:"none",color:C.wh,cursor:"pointer",fontSize:"1.3rem"}}>{nav?"✕":"☰"}</button>
     </div>
     {nav&&sidebar}
@@ -504,7 +504,7 @@ function EditD({doc,mob,onSave,onX}){const[ls,setLs]=useState(doc.lignes?.map(l=
 function FList({facs,onV}){const[q,setQ]=useState("");const[fil,setFil]=useState("all");
   const isRetard=(f)=>{if(f.status==="Payee")return false;if(!f.echeance)return false;const parts=f.echeance.split("/");const ech=new Date(parts[2],parts[1]-1,parts[0]);return new Date()>ech};
   const ff=facs.filter(f=>{const mq=!q||f.clientNom.toLowerCase().includes(q.toLowerCase());const mf=fil==="all"||(fil==="retard"?isRetard(f):f.status===fil);return mq&&mf});
-  return <div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}}><h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",color:C.g900}}>Factures</h1>{facs.length>0&&<button style={{...bs,...bsm}} onClick={()=>{const rows=[["Numero","Date","Client","HT","TVA","TTC","Statut","Echeance"]];facs.forEach(f=>rows.push([f.num,f.date,f.clientNom,f.totalHT,f.tva,f.totalTTC,f.status,f.echeance||""]));const csv=rows.map(r=>r.join(";")).join("\n");const blob=new Blob([csv],{type:"text/csv"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="factures-invoxa.csv";a.click()}}>📊 Export CSV</button>}</div>
+  return <div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:10}}><h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"1.4rem",color:C.g900}}>Factures</h1>{facs.length>0&&<button style={{...bs,...bsm}} onClick={()=>{const rows=[["Numero","Date","Client","HT","TVA","TTC","Statut","Echeance"]];facs.forEach(f=>rows.push([f.num,f.date,f.clientNom,f.totalHT,f.tva,f.totalTTC,f.status,f.echeance||""]));const csv=rows.map(r=>r.join(";")).join("\n");const blob=new Blob([csv],{type:"text/csv"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="factures-crafto.csv";a.click()}}>📊 Export CSV</button>}</div>
     {facs.length>0&&<div style={{display:"flex",gap:10,marginBottom:12,flexWrap:"wrap",alignItems:"center"}}><SearchBar value={q} onChange={setQ} placeholder="Rechercher..."/><div style={{display:"flex",gap:4}}>{[{v:"all",l:"Toutes"},{v:"Emise",l:"En attente"},{v:"retard",l:"En retard"},{v:"Payee",l:"Encaissees"}].map(o=><button key={o.v} onClick={()=>setFil(o.v)} style={{padding:"5px 12px",borderRadius:50,fontSize:"0.75rem",fontWeight:600,border:`1.5px solid ${fil===o.v?C.g500:C.x100}`,background:fil===o.v?C.g100:C.wh,color:fil===o.v?C.g700:C.x500,cursor:"pointer",fontFamily:"inherit"}}>{o.l}</button>)}</div></div>}
     {ff.length===0?<div style={{...crd,textAlign:"center",padding:"32px 0"}}><p style={{color:C.x500}}>{facs.length===0?"Convertissez un devis en facture":"Aucun resultat"}</p></div>
     :<div style={crd}>{ff.map((f,i)=><div key={i} onClick={()=>onV(f)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 0",borderBottom:i<ff.length-1?`1px solid ${C.x100}`:"none",cursor:"pointer"}}><div><div style={{fontWeight:600,fontSize:"0.84rem"}}>{f.num} — {f.clientNom}</div><div style={{fontSize:"0.72rem",color:C.x500}}>{f.date}{f.echeance&&" — Ech. "+f.echeance}{isRetard(f)&&<span style={{color:C.r500,fontWeight:600}}> EN RETARD</span>}</div></div><div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontWeight:700,color:C.g800,fontSize:"0.85rem"}}>{f.totalTTC}</span><SBadge s={f.status}/></div></div>)}</div>}
@@ -674,7 +674,7 @@ function SubV({mob,uid,email,art}){const toast=useT();const[loading,setLoading]=
       <div style={{display:"flex",flexDirection:"column",gap:12}}>
         <div style={crd}>
           <h3 style={{fontWeight:700,color:C.g900,fontSize:"0.95rem",marginBottom:8}}>Pourquoi 29,99 EUR/mois ?</h3>
-          <p style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.6}}>Vous perdez en moyenne 5h par semaine sur vos devis et factures. A 40 EUR/h, ca fait 800 EUR/mois. Invoxa vous en fait gagner au moins la moitie pour moins de 1 EUR par jour.</p>
+          <p style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.6}}>Vous perdez en moyenne 5h par semaine sur vos devis et factures. A 40 EUR/h, ca fait 800 EUR/mois. Crafto vous en fait gagner au moins la moitie pour moins de 1 EUR par jour.</p>
         </div>
         <div style={crd}>
           <h3 style={{fontWeight:700,color:C.g900,fontSize:"0.95rem",marginBottom:8}}>Sans engagement</h3>
@@ -682,7 +682,7 @@ function SubV({mob,uid,email,art}){const toast=useT();const[loading,setLoading]=
         </div>
         <div style={crd}>
           <h3 style={{fontWeight:700,color:C.g900,fontSize:"0.95rem",marginBottom:8}}>Une question ?</h3>
-          <p style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.6}}>Ecrivez-nous a support@invoxa.tech</p>
+          <p style={{fontSize:"0.85rem",color:C.x700,lineHeight:1.6}}>Ecrivez-nous a support@crafto.tech</p>
         </div>
       </div>
     </div>
