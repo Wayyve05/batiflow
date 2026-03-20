@@ -15,36 +15,69 @@ export async function POST(req) {
     const acceptLink = viewLink + '&action=accept';
     const pdfLink = viewLink + '&print=1';
 
-    const rows = (lignes || []).map(l => '<tr><td style="padding:8px;border-bottom:1px solid #eee;font-size:12px">'+l.poste+'</td><td style="padding:8px;text-align:right;border-bottom:1px solid #eee;font-size:12px">'+l.quantite+' '+l.unite+'</td><td style="padding:8px;text-align:right;border-bottom:1px solid #eee;font-size:12px">'+Number(l.prixUnitaireHT).toFixed(2)+' EUR</td><td style="padding:8px;text-align:right;font-weight:600;border-bottom:1px solid #eee;font-size:12px">'+l.totalHT+' EUR</td></tr>').join('');
+    const ent = entreprise || 'Votre artisan';
+    const client = clientNom || 'Client';
+    const ttc = totalTTC || '0 EUR';
+    const ht = totalHT || '0 EUR';
+    const tvaVal = tva || '0 EUR';
 
-    const html = '<div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto">'
-      + '<div style="background:#145A3E;padding:24px;border-radius:12px 12px 0 0"><h1 style="color:white;margin:0;font-size:18px">' + entreprise + '</h1><p style="color:rgba(255,255,255,0.6);margin:4px 0 0;font-size:13px">' + type + ' N. ' + num + '</p></div>'
-      + '<div style="padding:24px;border:1px solid #eee;border-top:none;background:white">'
-      + '<p style="font-size:14px">Bonjour ' + clientNom + ',</p>'
-      + '<p style="font-size:14px">Veuillez trouver ci-dessous votre ' + type.toLowerCase() + ' <strong>n' + num + '</strong> d\'un montant de <strong>' + totalTTC + '</strong>.</p>'
-      + '<table style="width:100%;border-collapse:collapse;margin:16px 0"><thead><tr style="background:#F2FDF7"><th style="padding:8px;text-align:left;font-size:11px;color:#145A3E">Poste</th><th style="padding:8px;text-align:right;font-size:11px;color:#145A3E">Qte</th><th style="padding:8px;text-align:right;font-size:11px;color:#145A3E">PU HT</th><th style="padding:8px;text-align:right;font-size:11px;color:#145A3E">Total</th></tr></thead><tbody>' + rows + '</tbody></table>'
-      + '<div style="text-align:right;padding:12px;background:#F2FDF7;border-radius:8px"><div style="font-size:14px">HT: <strong>' + totalHT + '</strong></div><div style="font-size:14px">TVA: <strong>' + tva + '</strong></div><div style="font-size:20px;color:#145A3E;font-weight:800;margin-top:4px">TTC: ' + totalTTC + '</div></div>'
-      + '<div style="text-align:center;margin:24px 0">'
-      + (type === 'DEVIS' ? '<a href="' + acceptLink + '" style="display:inline-block;background:#145A3E;color:white;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px;margin-right:8px">Accepter ce devis</a>' : '')
-      + '<a href="' + pdfLink + '" style="display:inline-block;background:#333;color:white;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px">Telecharger PDF</a>'
-      + '</div>'
-      + '<p style="font-size:11px;color:#999">N\'hesitez pas a nous contacter pour toute question.</p>'
-      + '<p style="font-size:10px;color:#bbb;margin-top:16px">' + entreprise + ' via Crafto</p>'
-      + '</div></div>';
+    const rows = (lignes || []).map(function(l) {
+      return '<tr><td style="padding:8px;border-bottom:1px solid #eee;font-size:12px">' + (l.poste || '') + '</td><td style="padding:8px;text-align:right;border-bottom:1px solid #eee;font-size:12px">' + (l.quantite || 0) + ' ' + (l.unite || '') + '</td><td style="padding:8px;text-align:right;border-bottom:1px solid #eee;font-size:12px">' + Number(l.prixUnitaireHT || 0).toFixed(2) + ' EUR</td><td style="padding:8px;text-align:right;font-weight:600;border-bottom:1px solid #eee;font-size:12px">' + (l.totalHT || '0') + ' EUR</td></tr>';
+    }).join('');
+
+    var acceptBtnHtml = '';
+    if (type === 'DEVIS') {
+      acceptBtnHtml = '<a href="' + acceptLink + '" style="display:inline-block;background:#145A3E;color:white;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px;margin-right:8px">Accepter ce devis</a>';
+    }
+
+    const html = [
+      '<div style="font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto">',
+      '<div style="background:#145A3E;padding:24px;border-radius:12px 12px 0 0">',
+      '<h1 style="color:white;margin:0;font-size:18px">' + ent + '</h1>',
+      '<p style="color:rgba(255,255,255,0.6);margin:4px 0 0;font-size:13px">' + type + ' N. ' + num + '</p>',
+      '</div>',
+      '<div style="padding:24px;border:1px solid #eee;border-top:none;background:white">',
+      '<p style="font-size:14px">Bonjour ' + client + ',</p>',
+      '<p style="font-size:14px">Veuillez trouver ci-dessous votre ' + type.toLowerCase() + ' <strong>n' + num + '</strong> d un montant de <strong>' + ttc + '</strong>.</p>',
+      '<table style="width:100%;border-collapse:collapse;margin:16px 0">',
+      '<thead><tr style="background:#F2FDF7">',
+      '<th style="padding:8px;text-align:left;font-size:11px;color:#145A3E">Poste</th>',
+      '<th style="padding:8px;text-align:right;font-size:11px;color:#145A3E">Qte</th>',
+      '<th style="padding:8px;text-align:right;font-size:11px;color:#145A3E">PU HT</th>',
+      '<th style="padding:8px;text-align:right;font-size:11px;color:#145A3E">Total</th>',
+      '</tr></thead>',
+      '<tbody>' + rows + '</tbody></table>',
+      '<div style="text-align:right;padding:12px;background:#F2FDF7;border-radius:8px">',
+      '<div style="font-size:14px">HT: <strong>' + ht + '</strong></div>',
+      '<div style="font-size:14px">TVA: <strong>' + tvaVal + '</strong></div>',
+      '<div style="font-size:20px;color:#145A3E;font-weight:800;margin-top:4px">TTC: ' + ttc + '</div>',
+      '</div>',
+      '<div style="text-align:center;margin:24px 0">',
+      acceptBtnHtml,
+      '<a href="' + pdfLink + '" style="display:inline-block;background:#333;color:white;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px">Telecharger PDF</a>',
+      '</div>',
+      '<p style="font-size:11px;color:#999">N hesitez pas a nous contacter pour toute question.</p>',
+      '<p style="font-size:10px;color:#bbb;margin-top:16px">' + ent + ' via Crafto</p>',
+      '</div></div>'
+    ].join('\n');
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+    const subject = type + ' ' + num + ' - ' + ent + ' (' + dateStr + ')';
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: "Bearer " + RESEND_KEY },
       body: JSON.stringify({
-        from: entreprise + " <onboarding@resend.dev>",
+        from: ent + " <onboarding@resend.dev>",
         to: [to],
-        subject: type + " " + num + " - " + entreprise,
+        subject: subject,
         html: html
       })
     });
     const data = await res.json();
     if (data.error) return NextResponse.json({ error: data.error.message }, { status: 500 });
-    if (type === "DEVIS" && devisId && relance && relance !== "none") {
+    if (type === "DEVIS" && relance && relance !== "none" && uid && num) {
       const days = parseInt(relance);
       const relanceDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
       await supabase.from('devis').update({ relance_date: relanceDate, client_email: to }).eq('numero', num).eq('user_id', uid);
