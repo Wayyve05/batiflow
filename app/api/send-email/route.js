@@ -47,7 +47,7 @@ export async function POST(req) {
     if (type === "DEVIS" && devisId && relance && relance !== "none") {
       const days = parseInt(relance);
       const relanceDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
-      await supabase.from('devis').update({ relance_date: relanceDate, client_email: to }).eq('id', devisId);
+      await supabase.from('devis').update({ relance_date: relanceDate, client_email: to }).eq('numero', num).eq('user_id', uid);
     }
     return NextResponse.json({ success: true });
   } catch (e) { return NextResponse.json({ error: e.message }, { status: 500 }); }
