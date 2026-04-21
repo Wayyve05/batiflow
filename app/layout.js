@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react'
 export const metadata = {
   title: 'Crafto - Devis artisan par IA en 30 secondes | Factures, relances automatiques',
   description: 'Crafto génère vos devis artisan par intelligence artificielle en 30 secondes. Factures en 1 clic, signature électronique, relance automatique, suivi de paiement. 14 jours gratuits.',
@@ -45,7 +46,6 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-title" content="Crafto" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
-      <body style={{margin:0,padding:0,background:'#145A3E'}}>{children}</body>
-    </html>
+     <body style={{margin:0,padding:0,background:'#145A3E'}}>{children}<Analytics /></body>    </html>
   )
 }
